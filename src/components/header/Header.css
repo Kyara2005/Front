@@ -1,0 +1,197 @@
+/* --- HEADER PRINCIPAL --- */
+.header {
+    background: url('../../assets/estudiantes_felices.webp') no-repeat center center/cover;
+    background-attachment: fixed;
+    min-height: 95vh;
+    display: flex;
+    flex-direction: column;
+    color: white;
+    position: relative;
+    z-index: 0;
+}
+.header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.65);
+    z-index: -1;
+}
+.logo-container {
+    display: flex;
+    flex-direction: column; 
+    align-items: flex-start;
+    text-align: flex-start;
+    margin-left: 30px;
+    margin-top: 30px;
+}
+.logo {
+    height: 70px;
+    filter: drop-shadow(3px 3px 6px rgba(0,0,0,0.6));
+    margin-left: 50px;
+}
+.nav-links {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    padding-bottom: 0.5rem;
+    flex-wrap: wrap;
+    margin-top: -100px;
+    margin-left: 10px;
+}
+.nav-links a {
+    color: white;
+    font-weight: 600;
+    font-size: 1.15em;
+    text-decoration: none;
+    position: relative;
+    transition: color 0.3s ease;
+}
+.nav-links a::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    background-color: #FFAEC9;
+    bottom: 0;
+    left: 0;
+    transition: width 0.3s ease-in-out;
+}
+.nav-links a:hover::after {
+    width: 100%;
+}
+.nav-links a:hover {
+    color: var(--accent-color);
+}
+/* --- Botones CTA --- */
+.header-cta-buttons {
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 10px;
+}
+.hero-text {
+    text-align: center;
+    padding-bottom: 120px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: -60px;
+    position: relative;
+    z-index: 5;
+}
+.hero-text p {
+    font-size: 2.2rem;
+    margin-bottom: 30px;
+}
+.btn-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 40px;
+}
+.btn {
+    display: inline-block;
+    margin: 10px;
+    padding: 12px 50px;
+    background-color: #ffffff;
+    color: rgb(138, 63, 223);
+    border: none;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    font-size: 1.1em;
+    cursor: pointer;
+    box-shadow: rgba(255, 255, 255, 0.3) 0px 6px 20px;
+}
+.btn:hover {
+    background-color: #b0005c;
+    transform: translateY(-2px);
+}
+.btn-primary {
+    background-color: #dd208254;
+    color: rgb(235, 223, 223);
+    border: 2px solid #dd208254;
+    box-shadow: rgba(255, 255, 255, 0.3) 0px 6px 20px;
+}
+.btn-primary:hover {
+    background-color: #b0005c;
+    border-color: #b0005c;
+}
+.btn-secondary {
+    background-color: rgba(255, 255, 255, 0.2);
+    border: 2px solid white;
+    box-shadow: rgba(255, 255, 255, 0.3) 0px 6px 20px;
+    color: rgb(249, 248, 250);
+    margin: 10px;
+    padding: 12px 50px;
+    font-size: 1.1em;
+    font-weight: 600;
+    border-radius: 12px;
+    text-align: center;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+.btn-secondary:hover {
+    background-color: rgb(255, 255, 255);
+    color: #6C0063;
+    transform: translateY(-2px);
+}
+.boton-descarga1 {
+    margin-top: 10px;
+}
+.descarga-chica {
+    font-size: 0.9rem;
+    padding: 8px 20px;
+    border-radius: 8px;
+}
+.button__auth-button {
+    background-color: rgba(255, 255, 255, 0.123);
+    color: rgb(241, 247, 239);
+    border-radius: 8px;
+    font-weight: bold;
+    max-width: 300px;
+    width: 100%;
+    padding: 12px 24px;
+    text-align: center;
+    margin: 0 auto;
+    display: block;
+}
+@media (max-width: 768px) {
+    .header {
+        min-height: 80vh; 
+    }
+    .logo-container {
+        margin-left: 15px; 
+        margin-top: 20px;
+        align-items: center; 
+    }
+    .nav-links {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        margin-top: 0; 
+    }
+    .nav-links a {
+        font-size: 1em; 
+    }
+    .hero-text {
+        padding-bottom: 60px; 
+    }
+    .hero-text p {
+        font-size: 1.8rem; 
+    }
+    .btn, .btn-secondary {
+        padding: 10px 30px;
+        flex-direction: column;
+    }
+    .button__auth-button {
+        width: auto;
+        padding: 10px 20px; 
+    }
+}

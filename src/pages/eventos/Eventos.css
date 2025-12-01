@@ -1,0 +1,93 @@
+.eventos-section {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f8f9fa;
+    padding: 10px 15px;
+    text-align: center;
+    overflow: hidden; 
+}
+.slider-title {
+    font-size: 2.5em;
+    color: #4a4e69;
+    margin-bottom: 10px;
+}
+.slider-subtitle {
+    font-size: 1.1em;
+    color: #6a6a6a;
+    margin-bottom: 40px;
+}
+.slider-container {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+/* Contenedor interno que se va a animar */
+.slider-inner {
+    display: flex;
+    gap: 20px;
+    width: calc((300px + 20px) * 8); /* Ancho de tarjeta (300px) + gap (20px) x 8 tarjetas */
+    animation: auto-scroll 40s linear infinite; /* Animación de desplazamiento */
+    white-space: nowrap; /* Evita que las tarjetas salten a la siguiente línea */
+}
+.slider-container:hover .slider-inner {
+    animation-play-state: paused;
+}
+.slide-card {
+    width: 300px;
+    background-color: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    transition: transform 0.3s ease;
+    text-align: left;
+}
+.slide-card:hover {
+    transform: translateY(-5px);
+}
+.slide-image {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+.slide-card-title {
+    font-size: 1.4em;
+    color: #7663e0;
+    margin-bottom: 10px;
+}
+.slide-description {
+    font-size: 1em;
+    color: #6a6a6a;
+    overflow: hidden;
+    word-wrap: break-word;
+    white-space: normal;
+}
+@keyframes auto-scroll {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(calc(-50% - 10px)); /* Desplaza exactamente la mitad del contenido */
+    }
+}
+@media (max-width: 768px) {
+    .slider-title {
+        font-size: 2em;
+    }
+    .slider-subtitle {
+        font-size: 0.9em;
+    }
+    .slider-inner {
+        width: calc((250px + 15px) * 8); 
+        animation-duration: 30s; 
+    }
+    .slide-card {
+        width: 250px;
+        padding: 15px;
+    }
+    .slider-container:hover .slider-inner {
+        animation-play-state: running; /* Deshabilitamos la pausa al pasar el mouse en móviles */
+    }
+}

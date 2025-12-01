@@ -1,0 +1,15 @@
+#que-es-vibe-u {
+    padding: 4rem 2rem;
+    background-color: #6C0063;
+    text-align: center;
+}
+#que-es-vibe-u h2 {
+    color: #f9f7fc;
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+#que-es-vibe-u p {
+    max-width: 900px;
+    margin: 0 auto;
+    font-size: 1.5rem;
+}

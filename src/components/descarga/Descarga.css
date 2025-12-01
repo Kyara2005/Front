@@ -1,0 +1,47 @@
+/* General */
+.download-cta-section {
+    background: linear-gradient(90deg, #6C0063, #D6006D);
+    color: #ffffff;
+    text-align: center;
+    overflow: hidden;
+}
+.download-cta-section .section-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+.download-cta-section p {
+    font-size: 1.2rem;
+    margin-bottom: 40px;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.app-buttons-cta {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    padding: 14px 18px;
+}
+.container {
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    padding: 4px 2px;
+    border-radius: 12px;
+    text-decoration: none;
+    min-width: 80px;
+}
+.btn img {
+    height: auto;
+    width: 100%;
+    object-fit: contain;
+    transition: background-color 0.3s, transform 0.2s;
+    margin: 0px;
+    border-radius: 2px;
+    display: flex;
+}
+.btn.btn-googleplay, .btn.btn-appstore {
+    background-color: #000000;
+}

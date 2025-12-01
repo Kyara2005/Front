@@ -1,0 +1,263 @@
+/* ---------------------------------------------------- */
+/* Contenedor Principal */
+/* ---------------------------------------------------- */
+.password-change-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 20px;
+  min-height: 100vh; /* Asegura que ocupe toda la altura */
+}
+
+/* ---------------------------------------------------- */
+/* Tarjeta Principal */
+/* ---------------------------------------------------- */
+.password-change-card {
+  background-color: #ffffff;
+  padding: 40px 50px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px; /* Ancho máximo para el formulario */
+  text-align: center;
+}
+
+/* Estilos del ícono de usuario */
+.icon-circle {
+  background-color: #5d3f6a; /* Morado oscuro */
+  border-radius: 50%;
+  width: 70px;
+  height: 70px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto 20px auto; /* Centrar y espaciar */
+}
+
+.user-icon {
+  color: #ffffff; /* Color del icono dentro del círculo */
+  width: 40px;
+  height: 40px;
+}
+
+/* Título */
+.title {
+  color: #5d3f6a; /* Morado oscuro */
+  font-size: 1.6em;
+  margin-bottom: 30px;
+  font-weight: 500;
+}
+
+/* ---------------------------------------------------- */
+/* Formulario y Campos */
+/* ---------------------------------------------------- */
+.form-content {
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* Espacio entre los campos */
+}
+
+/* Campos de entrada */
+.input-field {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1em;
+  box-sizing: border-box; /* Incluir padding y borde en el ancho */
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.input-field:focus {
+  border-color: #5d3f6a; /* Resaltar al enfocar */
+}
+
+/* Estilo para el campo de usuario deshabilitado/visual */
+.disabled-field {
+  background-color: #f0f0f0;
+  color: #333;
+  font-weight: bold;
+}
+
+/* Contenedor para el campo con ícono de ojo */
+.input-with-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+/* Ajuste para el campo dentro del contenedor con ícono */
+/* Nota: Aseguramos que el input dentro de .input-with-icon tenga padding a la derecha */
+.input-with-icon .input-field {
+  padding-right: 40px; /* Dejar espacio para el ícono */
+}
+
+/* Estilos para el ícono de ojo */
+.eye-icon {
+  position: absolute;
+  right: 10px;
+  cursor: pointer;
+  color: #999; /* Gris */
+  width: 24px;
+  height: 24px;
+  background: none;
+  border: none;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.eye-icon:hover {
+  color: #5d3f6a;
+}
+
+.eye-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* ---------------------------------------------------- */
+/* Botón de Envío */
+/* ---------------------------------------------------- */
+.submit-button {
+  background-color: #5d3f6a; /* Morado oscuro */
+  color: #ffffff;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 4px;
+  font-size: 1.1em;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background-color 0.3s;
+}
+
+.submit-button:hover {
+  background-color: #4b3256; /* Morado un poco más oscuro al pasar el ratón */
+}
+
+/* ---------------------------------------------------- */
+/* Mensajes de Feedback */
+/* ---------------------------------------------------- */
+.feedback-message {
+  padding: 10px 15px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  text-align: left;
+  font-size: 0.95em;
+  border: 1px solid transparent;
+}
+
+.error-message {
+  background-color: #fde8e8; /* Rojo claro */
+  color: #cc0000; /* Rojo oscuro */
+  border-color: #f0c3c3;
+}
+
+.success-message {
+  background-color: #e8fde8; /* Verde claro */
+  color: #008000; /* Verde oscuro */
+  border-color: #c3f0c3;
+}
+/* --- INPUTS GENERALES --- */
+.input-field {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  border-radius: 6px; 
+  font-size: 1em;
+  color: #333; 
+  background-color: #fff; /* <-- fondo blanco */
+  box-sizing: border-box; 
+  outline: none;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+/* Mantener el campo deshabilitado como estaba */
+.disabled-field {
+  background-color: #f7f7f7;
+  color: #666;
+  font-weight: 500;
+  cursor: not-allowed;
+}
+
+/* ... (Tus estilos existentes) ... */
+
+/* Estilo para el título principal del nombre de usuario */
+.main-username-title {
+  color: #333; /* O un color más oscuro, como en tu imagen */
+  font-size: 1.8em; /* Tamaño grande para el nombre */
+  font-weight: bold;
+  margin-bottom: 20px; /* Espacio debajo del nombre y antes del avatar */
+  text-align: center;
+}
+
+.icon-circle {
+  width: 100px; /* Tamaño más grande para el avatar */
+  height: 100px; /* Mismo tamaño para que sea un círculo */
+  background-color: transparent; /* Fondo transparente, la imagen debe cubrir */
+  border: 4px solid #5d3f6a; /* ✅ Borde morado como en tu ejemplo */
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto 25px auto; /* Centrar y añadir más margen debajo */
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Sombra para destacarlo */
+}
+
+.user-avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%; /* Asegura que la imagen sea circular dentro del borde */
+}
+
+/* El título del formulario, ahora para "Cambiar contraseña" */
+.title {
+  margin-top: 15px; /* Espacio después del avatar */
+  margin-bottom: 30px; /* Más espacio antes del formulario */
+  color: #333;
+  font-size: 1.5em;
+  font-weight: 600;
+}
+
+/* ... (Tus otros estilos para .input-field, .eye-icon, .submit-button, etc.) ... */
+/* ------------------------------- */
+/* Avatar y nombre de usuario grande */
+/* ------------------------------- */
+
+/* Tamaño más grande para el avatar */
+.icon-circle {
+  width: 120px; /* Aumentado de 100px */
+  height: 120px; /* Aumentado de 100px */
+  border: 4px solid #5d3f6a;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto 25px auto;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12); /* Un poco más de sombra */
+}
+
+/* Imagen dentro del avatar */
+.user-avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+/* Nombre de usuario más grande y destacado */
+.main-username-title {
+  font-size: 2em; /* Aumentado de 1.8em */
+  font-weight: 700; /* Más negrita */
+  color: #333;
+  margin-bottom: 25px; /* Más espacio debajo */
+  text-align: center;
+}

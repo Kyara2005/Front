@@ -1,0 +1,63 @@
+.matches-section {
+    text-align: center;
+    color: white;
+    padding: 2rem;
+}
+
+.back-btn {
+    background: none;
+    border: none;
+    color: #7b4bff;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-bottom: 1rem;
+}
+
+.matches-title {
+    font-size: 1.8rem;
+    margin-bottom: 0.3rem;
+}
+
+.matches-subtitle {
+    color: #ccc;
+    margin-bottom: 1.5rem;
+}
+
+.matches-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 20px;
+}
+
+.match-card {
+    background: #1f1f2e;
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    transition: transform 0.2s ease;
+}
+
+.match-card:hover {
+    transform: translateY(-5px);
+}
+
+.match-avatar {
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    margin-bottom: 0.5rem;
+}
+
+.connect-btn {
+    margin-top: 10px;
+    background: #7b4bff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 12px;
+    cursor: pointer;
+}
+
+.connect-btn:hover {
+    background: #5b32d6;
+}

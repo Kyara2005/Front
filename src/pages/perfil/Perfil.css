@@ -1,0 +1,189 @@
+.perfil-main {
+    display: flex;
+    flex-direction: column; 
+    align-items: center; 
+    padding: 20px 30px;
+    min-height: 100vh;
+    background-color: #f0f0f0; 
+}
+/* Estilo del Título principal, centrado y arriba */
+.main-title {
+    text-align: center;
+    color: #333;
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 30px;
+}
+.perfil-content {
+    display: flex;
+    flex-direction: row; 
+    gap: 30px;
+    width: 100%;
+    max-width: 1200px; 
+}
+/* Sección del formulario*/
+.perfil-form-section {
+    background-color: white;
+    border-radius: 15px;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    padding: 40px;
+    width: 40%;
+}
+.form-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+.form-header h4 {
+    font-size: 24px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 10px;
+}
+.form-header p {
+    color: #777;
+    font-size: 16px;
+}
+.perfil-header {
+    text-align: center;
+    margin-bottom: 30px;
+    color: black;
+    font-size: 20px;
+    font-weight: 600;
+}
+.perfil-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+.input-group label {
+    font-size: 16px;
+    color: #555;
+}
+.input-group input,
+.input-group textarea {
+    padding: 12px;
+    font-size: 16px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    transition: border 0.3s, background-color 0.3s;
+    color: black;
+}
+.input-group input:focus,
+.input-group textarea:focus {
+    border-color: #4caf50;
+    background-color: white;
+    outline: none;
+}
+textarea {
+    resize: vertical;
+    min-height: 150px;
+    color: white;
+}
+.error-text {
+    font-size: 12px;
+    color: #ff5252;
+}
+.submit-btn {
+    background-color: #4caf50;
+    color: white;
+    padding: 12px 25px;
+    font-size: 18px;
+    font-weight: 600;
+    border-radius: 30px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    align-self: center;
+}
+.submit-btn:hover {
+    background-color: #d50fe7;
+}
+.perfiles-registrados-section {
+    width: 60%; 
+    color: black;
+}
+.perfiles-registrados-section h4 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+.usuarios-list {
+    display: flex;
+    flex-wrap: wrap; 
+    gap: 20px; 
+    justify-content: center; 
+    color: black;
+}
+.usuario-card {
+    background-color: white;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    width: 250px; 
+    text-align: center;
+}
+.foto-perfil {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 10px;
+}
+.logout-btn {
+    background-color: #ff5252;
+    color: white;
+    padding: 12px 25px;
+    border-radius: 30px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+.logout-btn:hover {
+    background-color: #e34040;
+}
+.theme-toggle {
+    background-color: #d40909;
+    border: none;
+    border-radius: 50%;
+    padding: 10px;
+    font-size: 20px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+.theme-toggle:hover {
+    transform: scale(1.1);
+}
+@media (max-width: 768px) {
+    .perfil-content {
+        flex-direction: column; 
+        align-items: center;
+    }
+    .perfil-form-section, .perfiles-registrados-section {
+        width: 100%;
+        max-width: 500px;
+        margin-bottom: 20px;
+    }
+    .perfil-form-section {
+        padding: 20px;
+    }
+    .form-header h4 {
+        font-size: 22px;
+    }
+    .input-group input,
+    .input-group textarea {
+        font-size: 14px;
+        padding: 10px;
+    }
+    .submit-btn {
+        padding: 10px 20px;
+        font-size: 16px;
+    }
+    .usuario-card {
+        width: 100%;
+    }
+}

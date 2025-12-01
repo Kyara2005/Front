@@ -1,0 +1,97 @@
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+@keyframes gradientMove {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+.gracias {
+    height: 100vh;
+    min-width: 96vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(45deg, #6C0063, #b0005c);
+    background-size: 400% 400%;
+    animation: gradientMove 10s ease infinite;
+    color: white;
+    text-align: center;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+}
+.gracias__box {
+    background-color: #b0005c;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+    max-width: 500px;
+    width: 100%;
+}
+.gracias__box h1 {
+    font-size: 2rem;
+    margin-bottom: 15px;
+    font-family: "Orbitron", sans-serif;
+    animation: fadeIn 1s ease-in-out;
+}
+.gracias__box p {
+    font-size: 1.1rem;
+    margin-bottom: 25px;
+    animation: fadeIn 1.5s ease-in-out;
+}
+.gracias__box .btn {
+    text-decoration: none;
+    font-weight: bold;
+    padding: 12px 25px;
+    background-color: #b0005c;
+    border-radius: 30px;
+    color: white;
+    transition: background-color 0.3s ease;
+    animation: pulse 2s infinite ease-in-out;
+}
+.gracias__box .btn:hover {
+    background-color: #FFAEC9;
+    color: #000000;
+}
+.bubble {
+    position: absolute;
+    bottom: -100px;
+    width: 20px;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    animation: rise 10s infinite ease-in;
+}
+.bubble:nth-child(1) { left: 10%; animation-duration: 5s; }
+.bubble:nth-child(2) { left: 30%; animation-duration: 10s; }
+.bubble:nth-child(3) { left: 50%; animation-duration: 12s; }
+.bubble:nth-child(4) { left: 70%; animation-duration: 11s; }
+.bubble:nth-child(5) { left: 90%; animation-duration: 13s; }
+@keyframes rise {
+    0% {
+        transform: translateY(0) scale(1);
+    }
+    100% {
+        transform: translateY(-120vh) scale(1.5);
+        opacity: 0;
+    }
+}

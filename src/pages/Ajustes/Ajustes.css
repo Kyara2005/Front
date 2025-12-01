@@ -1,0 +1,170 @@
+/* Fondo general */
+.ajustes-section {
+  font-family: 'Poppins', sans-serif;
+  padding: 90px 20px 30px 20px;
+  background: rgba(255, 255, 255, 0.712);
+  min-height: 100vh;
+}
+
+/* Título principal */
+.ajustes-title {
+  font-size: 2rem;
+  color: #4a4e69;
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+/* Cards */
+.ajustes-card {
+  background: #ffffff;
+  border-radius: 15px;
+  padding: 25px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+  margin-bottom: 25px;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ajustes-card h3 {
+  font-size: 1.4rem;
+  color: #6a0dad;
+  margin-bottom: 15px;
+  border-left: 4px solid #6a0dad;
+  padding-left: 10px;
+}
+
+/* Filas dentro de las cards */
+.ajustes-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.ajustes-row span {
+  font-size: 1rem;
+  color: #555;
+}
+
+/* Botones de acción */
+.btn-accion {
+  background: #6a0dad;
+  color: white;
+  padding: 6px 14px;
+  font-size: 0.9rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+/* Botón peligro */
+.btn-peligro {
+  background: #d9534f;
+}
+
+.btn-peligro:hover {
+  background: #b52b27;
+}
+
+/* Inputs ocultos (para avatar) */
+.input-file-hidden {
+  display: none;
+}
+
+/* Selects */
+.ajustes-select {
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid #bbb;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ajustes-select:hover {
+  border-color: #6a0dad;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Switch de notificaciones */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 48px;
+  height: 24px;
+}
+
+.switch input {
+  display: none;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  background-color: #ccc;
+  border-radius: 25px;
+  top: 0; left: 0;
+  right: 0; bottom: 0;
+  transition: 0.3s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  border-radius: 50%;
+  transition: 0.3s;
+}
+
+input:checked + .slider {
+  background-color: #6a0dad;
+}
+
+input:checked + .slider:before {
+  transform: translateX(24px);
+}
+
+/* Hover solo en filas principales */
+.hover-card {
+  transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  cursor: pointer;
+}
+
+.hover-card:hover {
+  background: #f0f0ff; /* ligero cambio de color */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  transform: translateY(-2px);
+}
+
+/* Hover en botones de acción principales */
+.btn-actualizar-cuenta,
+.btn-actualizar-pass,
+.btn-cerrar-sesion {
+  transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  border: 1px solid #ccc; /* sutil borde gris */
+}
+
+.btn-actualizar-cuenta:hover,
+.btn-actualizar-pass:hover,
+.btn-cerrar-sesion:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  transform: translateY(-2px);
+  background-color: #f0f0ff; /* efecto iluminado sutil */
+}
+/* Hover para filas de Cambiar contraseña y Cerrar sesión */
+.hover-highlight {
+  transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  cursor: pointer;
+  border-radius: 8px;
+  padding: 10px; /* opcional para que se vea el recuadro completo */
+}
+
+.hover-highlight:hover {
+  background-color: #f0f0ff; /* color iluminado */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  transform: translateY(-2px);
+}
