@@ -12,7 +12,7 @@ const Register = () => {
 
     // 🔹 Registro en backend
     const registerUser = async (dataForm) => {
-        const url = `${import.meta.env.VITE_BACKEND_URL}/register`;
+        const url = `${import.meta.env.VITE_BACKEND_URL}/api/usuarios/register`;
 
         // Mapear los campos del formulario a lo que espera tu backend
         const body = {
