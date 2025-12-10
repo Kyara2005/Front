@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { HashRouter, Routes, Route } from "react-router-dom"; // <-- cambio aquí
 import Landing from "./pages/Landing";
 import Register from "./pages/register/Register";
 import Login from "./pages/login/Login";
@@ -23,21 +23,23 @@ import ActualizarInfo from "./Actualizacion/ActualizarInfo.jsx";
 import storeProfile from './context/storeProfile'
 import storeAuth from './context/storeAuth'
 import ChangePasswordForm from "./pages/Password/ActualizarPass.jsx";
+
 function App() {
-   const { profile} = storeProfile()
-  const { token } = storeAuth()
+  const { profile } = storeProfile();
+  const { token } = storeAuth();
 
   useEffect(() => {
     if(token){
       profile()
     }
   }, [token])
+
   useEffect(() => {
     AOS.init({ once: true });
   }, []);
 
   return (
-    <BrowserRouter>
+    <HashRouter> {/* <-- cambio de BrowserRouter a HashRouter */}
       <Routes>
 
         {/* ⬇️ RUTAS VISIBLES SOLO SIN TOKEN */}
@@ -69,7 +71,7 @@ function App() {
         <Route path="recuperarpassword/:token" element={<ResetPassword />} />
 
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
 
