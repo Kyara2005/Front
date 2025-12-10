@@ -5,7 +5,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./ActualizarInfo.css";
 
-// ➡️ Asegúrate de que esta ruta sea correcta para tu AvatarCropperModal
+// ➡️ Ruta correcta de tu AvatarCropperModal
 import AvatarCropperModal from "../components/Avatar/AvatarCropperModal.jsx";
 
 const ActualizarInfo = () => {
@@ -41,7 +41,6 @@ const ActualizarInfo = () => {
       if (!token) return;
 
       try {
-        // ✅ RUTA GET: /usuarios/perfil
         const res = await axios.get(
           `${import.meta.env.VITE_BACKEND_URL}/api/usuarios/perfil`,
           { headers: { Authorization: `Bearer ${token}` } }
@@ -81,7 +80,7 @@ const ActualizarInfo = () => {
     reader.readAsDataURL(file);
   };
 
-  // 🔹 FUNCIÓN MODIFICADA: Sube avatar a Cloudinary en carpeta `usuarios/<mi-usuario>`
+  // 🆕 Subir imagen recortada a Cloudinary en carpeta usuarios/<mi-usuario>
   const handleCroppedAvatar = async (croppedImageBlob) => {
     setCropperModalOpen(false);
     setImageToCrop(null);
@@ -91,6 +90,7 @@ const ActualizarInfo = () => {
       return;
     }
 
+    // Creamos un nombre seguro para la carpeta
     const safeUserName = userName?.trim()
       ? userName.replace(/\s+/g, "_").toLowerCase()
       : "usuario_sin_nombre";
@@ -140,11 +140,7 @@ const ActualizarInfo = () => {
       setTimeout(() => navigate("/ajustes"), 1200);
     } catch (err) {
       console.error("Error al actualizar la información:", err.response?.data || err);
-      if (err.response && err.response.status === 404) {
-        toast.error("Error 404: La ruta de actualización no fue encontrada.");
-      } else {
-        toast.error("Error al guardar la información.");
-      }
+      toast.error("Error al guardar la información.");
     }
   };
 
