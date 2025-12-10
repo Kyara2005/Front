@@ -56,8 +56,6 @@ const ActualizarInfo = () => {
         setUserUniversity(res.data.universidad || "");
         setUserCareer(res.data.carrera || "");
       } catch (err) {
-        // 🛑 CAMBIO CLAVE: Elimina el toast.error para evitar el mensaje
-        // y el return previene que se sobrescriban los estados
         console.error(
           "Error al cargar datos del usuario, manteniendo la información actual:",
           err.response?.data || err
@@ -67,39 +65,41 @@ const ActualizarInfo = () => {
     };
 
     fetchUserInfo();
-  }, [navigate]); // Añadir navigate a dependencias
+  }, [navigate]);
 
   const handleFileClick = () => fileInputRef.current.click();
 
-  // 🔄 handleFileChange MODIFICADO: Ahora carga la imagen en el cropper, NO la sube
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    // Convertir el archivo a Data URL para el cropper
     const reader = new FileReader();
     reader.addEventListener("load", () => {
-      setImageToCrop(reader.result); // Guarda la URL para el cropper
-      setCropperModalOpen(true); // Abre el modal de recorte
+      setImageToCrop(reader.result);
+      setCropperModalOpen(true);
     });
     reader.readAsDataURL(file);
   };
 
-  // 🆕 NUEVA FUNCIÓN: Sube la imagen ya recortada (Blob) a Cloudinary
+  // 🔹 FUNCIÓN MODIFICADA: Sube avatar a Cloudinary en carpeta `usuarios/<mi-usuario>`
   const handleCroppedAvatar = async (croppedImageBlob) => {
-    setCropperModalOpen(false); // Cierra el modal de recorte
-    setImageToCrop(null); // Limpia la imagen temporal
+    setCropperModalOpen(false);
+    setImageToCrop(null);
 
     if (!croppedImageBlob) {
       toast.error("No se pudo obtener la imagen recortada.");
       return;
     }
 
-    // ➡️ Lógica de Cloudinary usando el Blob recortado
+    const safeUserName = userName?.trim()
+      ? userName.replace(/\s+/g, "_").toLowerCase()
+      : "usuario_sin_nombre";
+
     const formData = new FormData();
     formData.append("file", croppedImageBlob);
     formData.append("upload_preset", "VIBE-U");
-    formData.append("folder", "avatars");
+    formData.append("folder", `usuarios/${safeUserName}`);
+    formData.append("public_id", "avatar");
 
     try {
       const res = await axios.post(
@@ -121,7 +121,6 @@ const ActualizarInfo = () => {
     try {
       const token = localStorage.getItem("token");
 
-      // 🛑 RUTA PUT: Se mantiene "/actualizar"
       await axios.put(
         `${import.meta.env.VITE_BACKEND_URL}/api/usuarios/actualizar`,
         {
@@ -140,7 +139,6 @@ const ActualizarInfo = () => {
       toast.success("Información actualizada");
       setTimeout(() => navigate("/ajustes"), 1200);
     } catch (err) {
-      // Manejo de error más detallado
       console.error("Error al actualizar la información:", err.response?.data || err);
       if (err.response && err.response.status === 404) {
         toast.error("Error 404: La ruta de actualización no fue encontrada.");
@@ -157,7 +155,6 @@ const ActualizarInfo = () => {
       <h2 className="titulo">Actualizar información de cuenta</h2>
 
       <div className="avatar-wrapper">
-        {/* Usamos las clases de tu CSS original */}
         <div className="avatar-circle" onClick={handleFileClick}>
           {avatar ? (
             <img src={avatar} alt="Avatar" className="avatar-img-preview" />
@@ -167,7 +164,6 @@ const ActualizarInfo = () => {
         </div>
 
         <div className="btns-avatar">
-          {/* Usamos las clases de tu CSS original */}
           <button className="btn-upload" onClick={handleFileClick}>
             Subir foto
           </button>
@@ -184,11 +180,10 @@ const ActualizarInfo = () => {
           type="file"
           className="input-file-hidden"
           accept="image/*"
-          onChange={handleFileChange} // Llama a la nueva lógica
+          onChange={handleFileChange}
         />
       </div>
 
-      {/* Modal de Avatares Predefinidos */}
       {avatarModalOpen && (
         <div className="avatar-modal-overlay">
           <div className="avatar-modal-content">
@@ -217,16 +212,14 @@ const ActualizarInfo = () => {
         </div>
       )}
 
-      {/* 🆕 AÑADIMOS EL MODAL DE RECORTAR */}
       {cropperModalOpen && imageToCrop && (
         <AvatarCropperModal
           imageSrc={imageToCrop}
           open={cropperModalOpen}
           onClose={() => setCropperModalOpen(false)}
-          onCropComplete={handleCroppedAvatar} // Llama a la nueva función de subida
+          onCropComplete={handleCroppedAvatar}
         />
       )}
-      {/* ---------------------------------- */}
 
       <div className="form-section">
         <div className="field-row">
