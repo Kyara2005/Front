@@ -25,7 +25,7 @@ const ChangePasswordForm = () => {
         const token = storeAuth.getState().token;
         if (!token) return;
 
-        const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/usuarios/perfil`, {
+        const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}api/usuarios/perfil`, {
           headers: { Authorization: `Bearer ${token}` }
         });
 
@@ -55,7 +55,7 @@ const ChangePasswordForm = () => {
       }
 
       const res = await axios.put(
-        `${import.meta.env.VITE_BACKEND_URL}/api/usuarios/actualizar/password`,
+        `${import.meta.env.VITE_BACKEND_URL}api/usuarios/actualizar/password`,
         { oldPassword, newPassword },
         { headers: { Authorization: `Bearer ${token}` } }
       );
