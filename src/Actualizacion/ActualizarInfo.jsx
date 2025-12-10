@@ -43,7 +43,7 @@ const ActualizarInfo = () => {
       try {
         // ✅ RUTA GET: /usuarios/perfil
         const res = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL}/perfil`,
+          `${import.meta.env.VITE_BACKEND_URL}api/usuarios/perfil`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
 
@@ -123,7 +123,7 @@ const ActualizarInfo = () => {
 
       // 🛑 RUTA PUT: Se mantiene "/actualizar"
       await axios.put(
-        `${import.meta.env.VITE_BACKEND_URL}/actualizar`,
+        `${import.meta.env.VITE_BACKEND_URL}api/usuarios/actualizar`,
         {
           nombre: userName,
           telefono: userPhone,
