@@ -25,7 +25,7 @@ const Ajustes = () => {
       if (!token || !import.meta.env.VITE_BACKEND_URL) return;
 
       const res = await axios.get(
-        `${import.meta.env.VITE_BACKEND_URL}/usuarios/perfil`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/usuarios/perfil`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
