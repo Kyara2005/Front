@@ -18,29 +18,32 @@ const Ajustes = () => {
 
   // 📌 Cargar Avatar al iniciar el componente
   useEffect(() => {
-    const fetchAvatar = async () => {
-      try {
-        const token = storeAuth.getState().token;
-        
-        // Verifica que la variable de entorno y el token existan
-        if (!token || !import.meta.env.VITE_BACKEND_URL) return;
+  const fetchAvatar = async () => {
+    try {
+      const token = storeAuth.getState().token;
 
-        const res = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL}/usuarios/perfil`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
+      if (!token || !import.meta.env.VITE_BACKEND_URL) return;
 
-        // ✔ Cargar avatar desde backend
-        if (res.data?.avatar) {
-          setAvatar(res.data.avatar);
+      const res = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/usuarios/perfil`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
-      } catch (error) {
-        console.error("Error al obtener el avatar en Ajustes:", error);
-      }
-    };
+      );
 
-    fetchAvatar();
-  }, []); // El array vacío asegura que se ejecute solo una vez al inicio
+      if (res.data?.avatar) {
+        setAvatar(res.data.avatar);
+      }
+    } catch (error) {
+      console.error("Error al obtener el avatar en Ajustes:", error.response?.data || error.message);
+    }
+  };
+
+  fetchAvatar();
+}, []);
+ // El array vacío asegura que se ejecute solo una vez al inicio
 
   const handleFileClick = () => fileInputRef.current.click();
 
