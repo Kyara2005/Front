@@ -1,71 +1,49 @@
-import { useEffect } from "react";
-import React, { useState, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios"; // Necesitas axios
-import storeAuth from "../../context/storeAuth"; // Necesitas storeAuth
+import axios from "axios";
+import storeAuth from "../../context/storeAuth";
 import "./Ajustes.css";
 
 const Ajustes = () => {
   const [notificaciones, setNotificaciones] = useState(true);
   const [tema, setTema] = useState("light");
   const [idioma, setIdioma] = useState("es");
-
   const [menuOpen, setMenuOpen] = useState(false);
-  const [avatar, setAvatar] = useState(null); // Importante: Estado para guardar la URL del avatar
+  const [avatar, setAvatar] = useState(null);
 
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
 
-  // 📌 Cargar Avatar al iniciar el componente
+  // 🔹 Cargar avatar
   useEffect(() => {
-  const fetchAvatar = async () => {
-    try {
-      const token = storeAuth.getState().token;
+    const fetchAvatar = async () => {
+      try {
+        const token = storeAuth.getState().token;
+        if (!token || !import.meta.env.VITE_BACKEND_URL) return;
 
-      if (!token || !import.meta.env.VITE_BACKEND_URL) return;
+        const res = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL}/api/usuarios/perfil`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
 
-      const res = await axios.get(
-        `${import.meta.env.VITE_BACKEND_URL}/api/usuarios/perfil`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (res.data?.avatar) {
-        setAvatar(res.data.avatar);
+        if (res.data?.avatar) setAvatar(res.data.avatar);
+      } catch (error) {
+        console.error("Error al obtener avatar:", error);
       }
-    } catch (error) {
-      console.error("Error al obtener el avatar en Ajustes:", error.response?.data || error.message);
-    }
-  };
+    };
 
-  fetchAvatar();
-}, []);
- // El array vacío asegura que se ejecute solo una vez al inicio
-
-  const handleFileClick = () => fileInputRef.current.click();
-
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setAvatar(URL.createObjectURL(file));
-      // NOTA: Aquí solo se establece la vista previa. Para guardar
-      // permanentemente, necesitarías una llamada a la API de subida.
-    }
-  };
+    fetchAvatar();
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    // Opcional: storeAuth.getState().clearToken();
     navigate("/login");
   };
 
   return (
     <section className="ajustes-section">
 
-      {/* ---------------- BOTÓN HAMBURGUESA ---------------- */}
+      {/* BOTÓN HAMBURGUESA */}
       <button
         className={`hamburger-btn ${menuOpen ? "open" : ""}`}
         onClick={() => setMenuOpen(!menuOpen)}
@@ -75,28 +53,22 @@ const Ajustes = () => {
         <span></span>
       </button>
 
-      {/* ---------------- MENÚ LATERAL ---------------- */}
+      {/* MENÚ LATERAL */}
       <nav className={`side-menu ${menuOpen ? "show" : ""}`}>
-
-        {/* Encabezado */}
         <div className="menu-header">
           <h3 className="menu-title">Menú</h3>
 
-          {/* AVATAR — YA NO ES CLICKEABLE */}
           <div className="avatar-section">
-            <div className="avatar-container" style={{ cursor: "default" }}>
+            <div className="avatar-container">
               {avatar ? (
-                // Aquí se muestra el avatar cargado por el useEffect o el nuevo archivo
                 <img src={avatar} alt="Avatar" className="avatar-img" />
               ) : (
                 <span className="default-avatar">👤</span>
               )}
             </div>
           </div>
-
         </div>
 
-        {/* Botones del menú */}
         <div className="menu-buttons">
           <button onClick={() => navigate("/dashboard")}>Inicio</button>
           <button onClick={() => navigate("/MUsuario")}>Mi cuenta</button>
@@ -106,86 +78,85 @@ const Ajustes = () => {
         </div>
       </nav>
 
-      {/* ---------------- TÍTULO ---------------- */}
+      {/* TÍTULO */}
       <h2 className="ajustes-title">Ajustes</h2>
 
-      {/* ---------------- CUENTA ---------------- */}
-      <div className="ajustes-card">
-        <h3>Cuenta</h3>
+      {/* ✅ CONTENEDOR QUE LIMITA EL ANCHO */}
+      <div className="ajustes-container">
 
-        {/* --- ACTUALIZAR INFO DE CUENTA --- */}
-        <div
-          className="ajustes-row hover-card"
-          onClick={() => navigate("/ActualizarInfo")}
-          style={{ cursor: "pointer" }}
-        >
-          <span>  Actualizar información de cuenta</span>
-        </div>
+        {/* CUENTA */}
+        <div className="ajustes-card">
+          <h3>Cuenta</h3>
 
-        {/* --- CAMBIAR CONTRASEÑA --- */}
-        <div
-          className="ajustes-row hover-highlight"
-          style={{ cursor: "pointer" }}
-          onClick={() => navigate("/ActualizarPass")}
-        >
-          <span>Cambiar contraseña</span>
-        </div>
-      </div>
-
-      {/* ---------------- PERSONALIZACIÓN ---------------- */}
-      <div className="ajustes-card">
-        <h3>Personalización</h3>
-
-        <div className="ajustes-row">
-          <span>Notificaciones</span>
-          <label className="switch">
-            <input
-              type="checkbox"
-              checked={notificaciones}
-              onChange={() => setNotificaciones(!notificaciones)}
-            />
-            <span className="slider"></span>
-          </label>
-        </div>
-
-        <div className="ajustes-row">
-          <span>Tema</span>
-          <select
-            className="ajustes-select"
-            value={tema}
-            onChange={(e) => setTema(e.target.value)}
+          <div
+            className="ajustes-row hover-card"
+            onClick={() => navigate("/ActualizarInfo")}
           >
-            <option value="light">Claro</option>
-            <option value="dark">Oscuro</option>
-          </select>
-        </div>
+            <span>Actualizar información de cuenta</span>
+          </div>
 
-        <div className="ajustes-row">
-          <span>Idioma</span>
-          <select
-            className="ajustes-select"
-            value={idioma}
-            onChange={(e) => setIdioma(e.target.value)}
+          <div
+            className="ajustes-row hover-highlight"
+            onClick={() => navigate("/ActualizarPass")}
           >
-            <option value="es">Español</option>
-            <option value="en">Inglés</option>
-          </select>
+            <span>Cambiar contraseña</span>
+          </div>
         </div>
-      </div>
 
-      {/* ---------------- SESIÓN ---------------- */}
-      <div className="ajustes-card">
-        <h3>Sesión</h3>
+        {/* PERSONALIZACIÓN */}
+        <div className="ajustes-card">
+          <h3>Personalización</h3>
 
-        <div
-          className="ajustes-row hover-card"
-          onClick={() => navigate("/login")}
-          style={{ cursor: "pointer" }}
-        >
-          <span>Cerrar sesión</span>
+          <div className="ajustes-row">
+            <span>Notificaciones</span>
+            <label className="switch">
+              <input
+                type="checkbox"
+                checked={notificaciones}
+                onChange={() => setNotificaciones(!notificaciones)}
+              />
+              <span className="slider"></span>
+            </label>
+          </div>
+
+          <div className="ajustes-row">
+            <span>Tema</span>
+            <select
+              className="ajustes-select"
+              value={tema}
+              onChange={(e) => setTema(e.target.value)}
+            >
+              <option value="light">Claro</option>
+              <option value="dark">Oscuro</option>
+            </select>
+          </div>
+
+          <div className="ajustes-row">
+            <span>Idioma</span>
+            <select
+              className="ajustes-select"
+              value={idioma}
+              onChange={(e) => setIdioma(e.target.value)}
+            >
+              <option value="es">Español</option>
+              <option value="en">Inglés</option>
+            </select>
+          </div>
         </div>
-      </div>
 
+        {/* SESIÓN */}
+        <div className="ajustes-card">
+          <h3>Sesión</h3>
+
+          <div
+            className="ajustes-row hover-card"
+            onClick={handleLogout}
+          >
+            <span>Cerrar sesión</span>
+          </div>
+        </div>
+
+      </div>
     </section>
   );
 };
