@@ -14,21 +14,13 @@ const MUsuario = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const fileInputRef = useRef(null);
 
-  const avatarOptions = [
-    "https://api.dicebear.com/6.x/bottts/svg?seed=Avatar1",
-    "https://api.dicebear.com/6.x/bottts/svg?seed=Avatar2",
-    "https://api.dicebear.com/6.x/bottts/svg?seed=Avatar3",
-    "https://api.dicebear.com/6.x/bottts/svg?seed=Avatar4",
-    "https://api.dicebear.com/6.x/bottts/svg?seed=Avatar5"
-  ];
-  const [avatarModalOpen, setAvatarModalOpen] = useState(false);
-
   const [userPhone, setUserPhone] = useState("");
   const [userAddress, setUserAddress] = useState("");
   const [userCedula, setUserCedula] = useState("");
   const [userDescription, setUserDescription] = useState("");
   const [userUniversity, setUserUniversity] = useState("");
   const [userCareer, setUserCareer] = useState("");
+  const [userRole, setUserRole] = useState("");
 
   const getAvatarUrl = (url) => {
     if (!url) return null;
@@ -42,7 +34,7 @@ const MUsuario = () => {
         if (!token) return;
 
         const response = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL}/api/usuarios/perfil`, 
+          `${import.meta.env.VITE_BACKEND_URL}api/usuarios/perfil`, 
           { headers: { Authorization: `Bearer ${token}` } }
         );
 
@@ -55,6 +47,7 @@ const MUsuario = () => {
         if (response.data?.descripcion) setUserDescription(response.data.descripcion);
         if (response.data?.universidad) setUserUniversity(response.data.universidad);
         if (response.data?.carrera) setUserCareer(response.data.carrera);
+        if (response.data?.rol) setUserRole(response.data.rol);
 
       } catch (error) {
         console.error("Error al obtener el usuario:", error);
@@ -116,30 +109,24 @@ const MUsuario = () => {
     setMenuOpen(!menuOpen);
   };
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      const menu = document.querySelector(".side-menu");
-      const hamburger = document.querySelector(".hamburger-btn");
+ useEffect(() => {
+  const fetchUserInfo = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
 
-      if (menuOpen && menu && !menu.contains(event.target) && hamburger && !hamburger.contains(event.target)) {
-        setMenuOpen(false);
-      }
-    };
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/usuarios/perfil`, 
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
-    const handleEscape = (event) => {
-      if (event.key === "Escape" && menuOpen) {
-        setMenuOpen(false);
-      }
-    };
-
-    document.addEventListener("click", handleClickOutside);
-    document.addEventListener("keydown", handleEscape);
-
-    return () => {
-      document.removeEventListener("click", handleClickOutside);
-      document.removeEventListener("keydown", handleEscape);
-    };
-  }, [menuOpen]);
+      if (response.data?.avatar) setAvatar(response.data.avatar);
+      // resto de campos...
+    } catch (error) {
+      console.error("Error al obtener el usuario:", error);
+    }
+  };
+  fetchUserInfo();
+}, []);
 
   const renderRightContent = () => {
     switch (activeTab) {
@@ -222,7 +209,6 @@ const MUsuario = () => {
           <h3 className="menu-title">Menú</h3>
 
           <div className="avatar-section">
-            <div className="avatar-container" onClick={handleFileClick}>
               {avatar ? (
                 <img src={getAvatarUrl(avatar)} alt="Avatar" className="avatar-img" />
               ) : (
@@ -230,7 +216,6 @@ const MUsuario = () => {
               )}
               <div className="avatar-overlay">
                 <i className="fa fa-camera"></i>
-              </div>
             </div>
 
             <input
@@ -274,6 +259,12 @@ const MUsuario = () => {
             </div>
 
             <h3 style={{ color: "white", marginTop: "10px"}}>{userName}</h3>
+            {userRole && (
+  <p style={{ color: "#5ffe03ff", fontSize: "17px", marginTop: "-2px" }}>
+    {userRole.charAt(0).toUpperCase() + userRole.slice(1)}
+  </p>
+)}
+
             <p style={{ color: "#8bc34a", marginTop: "-5px" }}>{userStatus}</p>
 
             <hr style={{ marginTop: "10px", marginBottom: "10px", borderTop: "1px solid rgba(255, 255, 255, 0.2)" }} />
