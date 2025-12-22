@@ -294,8 +294,8 @@
 }
 
 .avatar-circle-large {
-  width: 150px;
-  height: 150px;
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
   overflow: hidden;
   background-color: #ffffff;
@@ -399,3 +399,22 @@
 .side-menu .menu-title {
     font-weight: 800 !important;
 }
+/* Avatar circular en el menú lateral */
+.avatar-section .avatar-img,
+.left-panel-content img {
+    width: 100px;        /* Ajusta tamaño a tu gusto */
+    height: 100px;
+    border-radius: 50%;  /* Esto lo hace circular */
+    object-fit: cover;   /* Para que la imagen no se distorsione */
+    display: block;
+    margin: 0 auto;      /* Centra el avatar */
+}
+
+/* Avatar circular grande en la sección derecha */
+.avatar-circle-large img.avatar-img-large {
+    width: 120px;        /* Tamaño grande */
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
