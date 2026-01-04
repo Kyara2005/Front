@@ -122,7 +122,7 @@ const ActualizarInfo = () => {
       const token = localStorage.getItem("token");
 
       await axios.put(
-        `${import.meta.env.VITE_BACKEND_URL}/api/usuarios/actualizar`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/usuarios/actualizar-perfil`,
         {
           nombre: userName,
           telefono: userPhone,
