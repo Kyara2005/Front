@@ -93,15 +93,16 @@ const ResetPassword = () => {
       marginTop: "18px"
     },
     input: {
-      width: "100%",
-      padding: "12px",
-      paddingRight: "36px", // SOLO para el ojo
-      borderRadius: "12px",
-      border: "2px solid #d1d5db",
-      fontSize: "16px",
-      backgroundColor: "#fff",
-      color: "#000",
-    },
+  width: "100%",
+  height: "44px",              // ⬅️ más pequeño
+  padding: "10px 14px",        // ⬅️ MISMO espacio izq / der
+  borderRadius: "10px",
+  border: "1.5px solid #c4c4c4",
+  fontSize: "15px",
+  backgroundColor: "#fff",
+  color: "#000",               // ⬅️ letras negras
+  boxSizing: "border-box"
+},
     eyeIcon: {
       position: "absolute",
       right: "12px",
