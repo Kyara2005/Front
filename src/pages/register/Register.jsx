@@ -15,7 +15,7 @@ const Register = () => {
 
     const body = {
   nombre: dataForm.name,
-  email: dataForm.email, // 👈 institucional
+  correoInstitucional: dataForm.email, // 🔥 CLAVE
   password: dataForm.password,
 };
 
