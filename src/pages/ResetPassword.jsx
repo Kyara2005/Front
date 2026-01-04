@@ -94,7 +94,7 @@ const ResetPassword = () => {
     },
     input: {
       width: "100%",
-      padding: "14px 44px 14px 14px",
+      padding: "14px 32px 14px 14px",
       borderRadius: "12px",
       border: "2px solid #d1d5db",
       fontSize: "16px",
