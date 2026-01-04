@@ -55,8 +55,13 @@ export const Confirm = () => {
         transition: 'all .8s ease'
       }}>
         <img src={logo} alt="Logo Vibe-U" style={{ width: '130px', marginBottom: '25px' }} />
-        <h2>{mensaje}</h2>
-        <p>Ya puedes iniciar sesión</p>
+        <h2 style={{ color: '#000', marginBottom: '10px' }}>
+          {mensaje}
+        </h2>
+        <p style={{ color: '#333' }}>
+          Ya puedes iniciar sesión
+        </p>
+
         <Link to="/login">
           <button style={{ padding: '15px', marginTop: '20px' }}>
             Ir al Login
