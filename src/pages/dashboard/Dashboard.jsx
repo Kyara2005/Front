@@ -33,7 +33,7 @@ const Dashboard = () => {
                 if (!token) return setIsLoading(false);
 
                 const res = await axios.get(
-                    `${import.meta.env.VITE_BACKEND_URL}/perfil`,
+                    `${import.meta.env.VITE_BACKEND_URL}/api/usuarios/perfil`,
                     { headers: { Authorization: `Bearer ${token}` } }
                 );
 
@@ -53,7 +53,7 @@ const Dashboard = () => {
         const fetchQuote = async () => {
             try {
                 const response = await axios.get(
-                    `${import.meta.env.VITE_BACKEND_URL}/frase`
+                    `${import.meta.env.VITE_BACKEND_URL}/api/usuarios/frase`
                 );
 
                 const { q: frase, a: autor } = response.data[0];
