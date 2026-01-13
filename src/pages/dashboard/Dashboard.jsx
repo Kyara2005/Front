@@ -185,25 +185,45 @@ const Dashboard = () => {
                 <div className="dashboard-card events-card">
                     <h3 className="card-title">Eventos en tu U 🎉</h3>
                     <p>Descubre próximos eventos en tu campus.</p>
-                    <button className="dashboard-btn">Ver Eventos</button>
+                    <button className="dashboard-btn"
+                        onClick={() => navigate("/Eventos")}>
+                        Ver Eventos
+                    </button>
                 </div>
 
                 <div className="dashboard-card groups-card">
                     <h3 className="card-title">Grupos y Comunidades 🤝</h3>
                     <p>Únete a clubes con tus mismos intereses.</p>
-                    <button className="dashboard-btn">Explorar Grupos</button>
-                </div>
-
-                <div className="dashboard-card matches-card">
-                    <h3 className="card-title">Tus Posibles Matches 💖</h3>
-                    <p>Conecta con estudiantes que comparten tu vibe.</p>
-                    <button
-                        className="dashboard-btn"
-                        onClick={() => navigate("/matches")}
-                    >
-                        Ver Matches
+                    <button className="dashboard-btn"
+                        onClick={() => navigate("/Grupos")}>
+                        Explorar Grupos
                     </button>
                 </div>
+
+                {/* CONDICIONAL PARA ADMINISTRADOR */}
+                {userRole === "administrador" ? (
+                    <div className="dashboard-card admin-card">
+                        <h3 className="card-title">Gestión de Usuarios ⚙️</h3>
+                        <p>Administra los perfiles y permisos del sistema.</p>
+                        <button 
+                            className="dashboard-btn"
+                            onClick={() => navigate("/GestionUsuarios")}
+                        >
+                            Ver Gestión
+                        </button>
+                    </div>
+                ) : (
+                    <div className="dashboard-card matches-card">
+                        <h3 className="card-title">Tus Posibles Matches 💖</h3>
+                        <p>Conecta con estudiantes que comparten tu vibe.</p>
+                        <button
+                            className="dashboard-btn"
+                            onClick={() => navigate("/matches")}
+                        >
+                            Ver Matches
+                        </button>
+                    </div>
+                )}
             </div>
         </section>
     );
