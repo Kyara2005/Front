@@ -3,8 +3,8 @@ import Cropper from 'react-easy-crop';
 import { 
     FaPlus, FaArrowLeft, FaPaperPlane, 
     FaCamera, FaThumbsUp, FaComment, FaSearch, FaTimes, FaEllipsisH, FaShare, 
-    FaHeart, FaBell, FaRegFileAlt, FaChevronRight, FaThumbtack, FaExclamationCircle, FaSignOutAlt, FaTrash,
-    FaInfoCircle, FaShieldAlt, FaUserFriends, FaRegImage, FaSmile
+    FaHeart, FaBell, FaRegFileAlt, FaChevronRight, FaThumbtack, FaExclamationCircle, 
+    FaSignOutAlt, FaTrash, FaRegBookmark, FaBookmark, FaGlobeAmericas, FaRegImage, FaUserFriends
 } from 'react-icons/fa';
 import './Grupos.css';
 
@@ -36,6 +36,7 @@ const Grupos = () => {
 
     const [favoritos, setFavoritos] = useState({});
     const [likes, setLikes] = useState({});
+    const [guardados, setGuardados] = useState({}); // Nuevo estado para guardar
 
     const fileInputRef = useRef(null);
     const postFotoRef = useRef(null);
@@ -57,19 +58,23 @@ const Grupos = () => {
             await image.decode();
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
+
             canvas.width = croppedAreaPixels.width;
             canvas.height = croppedAreaPixels.height;
+
             ctx.translate(canvas.width / 2, canvas.height / 2);
             ctx.rotate((rotation * Math.PI) / 180);
             ctx.translate(-canvas.width / 2, -canvas.height / 2);
+
             ctx.drawImage(
                 image,
                 croppedAreaPixels.x, croppedAreaPixels.y, croppedAreaPixels.width, croppedAreaPixels.height,
                 0, 0, croppedAreaPixels.width, croppedAreaPixels.height
             );
+
             const result = canvas.toDataURL('image/jpeg');
             setNuevoGrupo({ ...nuevoGrupo, imagen: result });
-            setImageToCrop(null);
+            setImageToCrop(null); 
         } catch (e) {
             console.error("Error al recortar", e);
         }
@@ -151,6 +156,7 @@ const Grupos = () => {
 
     const toggleFavorito = (postId) => setFavoritos(prev => ({ ...prev, [postId]: !prev[postId] }));
     const toggleLike = (postId) => setLikes(prev => ({ ...prev, [postId]: !prev[postId] }));
+    const toggleGuardar = (postId) => setGuardados(prev => ({ ...prev, [postId]: !prev[postId] }));
 
     const handleToggleMenu = (e, id) => {
         e.stopPropagation(); 
@@ -210,12 +216,12 @@ const Grupos = () => {
         finally { setLoading(false); }
     };
 
-    // --- RENDERIZADO DEL MURO ACTIVO (ESTILO FACEBOOK + MANGA) ---
+    // --- RENDERIZADO DEL MURO ACTIVO ---
     if (grupoActivo) {
         const grupoData = grupos.find(g => g._id === grupoActivo._id) || grupoActivo;
         return (
             <div className="fb-layout">
-                {/* CABECERA (PORTADA Y PERFIL SUPERPUESTO) */}
+                {/* Cabecera Estilo Perfil */}
                 <div className="fb-header-container">
                     <div className="fb-cover-photo" style={{ backgroundImage: `url(${grupoData.imagen})` }}>
                         <button className="fb-back-btn" onClick={salirDeGrupo}><FaArrowLeft /></button>
@@ -224,62 +230,43 @@ const Grupos = () => {
                     </div>
                     
                     <div className="fb-profile-nav">
-                        <div className="fb-content-center">
-                            <div className="fb-avatar-section">
-                                <div className="fb-avatar-wrapper">
-                                    <img src={grupoData.imagen || "https://via.placeholder.com/150"} alt="avatar" className="fb-main-avatar" />
-                                    <button className="fb-avatar-cam-btn" onClick={() => perfilInputRef.current.click()}><FaCamera /></button>
-                                    <input type="file" ref={perfilInputRef} style={{display:'none'}} accept="image/*" onChange={(e) => handleImagePreview(e, 'perfil-update')} />
-                                    <div className="fb-like-badge"><FaThumbsUp /></div>
-                                </div>
-                                <div className="fb-name-stats">
-                                    <h1>{grupoData.nombre}</h1>
-                                    <p>{grupoData.miembrosArray?.length || 1} miembros</p>
-                                </div>
-                                <div className="fb-header-btns">
-                                    <button className="btn-fb-gray"><FaPlus /> Información sobre las contribuciones</button>
-                                    <button className="btn-fb-blue"><FaCamera /> Editar perfil</button>
-                                    <button className="btn-fb-gray"><FaSearch /> Ver perfil</button>
-                                </div>
+                        <div className="fb-avatar-section">
+                            <div className="fb-avatar-wrapper">
+                                <img src={grupoData.imagen || "https://via.placeholder.com/150"} alt="avatar" className="fb-main-avatar" />
+                                <button className="fb-avatar-cam-btn" onClick={() => perfilInputRef.current.click()}><FaCamera /></button>
+                                <input type="file" ref={perfilInputRef} style={{display:'none'}} accept="image/*" onChange={(e) => handleImagePreview(e, 'perfil-update')} />
+                            </div>
+                            <div className="fb-name-stats">
+                                <h1>{grupoData.nombre}</h1>
+                                <p><FaGlobeAmericas /> Grupo Público · <b>{grupoData.miembrosArray?.length || 1} miembros</b></p>
+                            </div>
+                            <div className="fb-header-btns">
+                                <button className="btn-fb-blue"><FaPlus /> Invitar</button>
+                                <button className="btn-fb-gray"><FaUserFriends /> Miembro</button>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div className="fb-body-grid">
-                    {/* BARRA IZQUIERDA */}
-                    <aside className="fb-sidebar-left">
-                        <div className="fb-card-white details-card">
-                            <h3>{userName}</h3>
-                            <p className="sub-text">Posts photos</p>
-                            <hr className="fb-hr" />
-                            <h3>Detalles</h3>
-                            <p><FaInfoCircle /> Comunidad oficial de {grupoData.nombre}</p>
-                            <button className="btn-full-fb">Editar detalles</button>
-                        </div>
-                    </aside>
-
-                    {/* FEED CENTRAL */}
+                <div className="fb-body-grid single-column">
                     <main className="fb-feed-center">
                         <div className="fb-card-white publish-area">
                             <div className="publish-input-row">
                                 <img src="https://via.placeholder.com/40" className="mini-avatar-fb" alt="u" />
                                 <input 
-                                    type="text" 
-                                    placeholder={`Publicar...`} 
+                                    placeholder={`¿Qué compartes hoy, ${userName}?`} 
                                     value={nuevoPost}
                                     onChange={(e) => setNuevoPost(e.target.value)}
                                 />
-                                <FaEllipsisH className="text-muted" />
                             </div>
                             {fotoPost && (
-                                <div className="fb-post-preview">
-                                    <img src={fotoPost} alt="preview" />
-                                    <button onClick={() => setFotoPost(null)}><FaTimes /></button>
+                                <div className="fb-post-preview-container">
+                                    <img src={fotoPost} alt="preview" className="fb-img-previa" />
+                                    <button className="fb-remove-preview" onClick={() => setFotoPost(null)}><FaTimes /></button>
                                 </div>
                             )}
                             <div className="publish-footer-fb">
-                                <button onClick={() => postFotoRef.current.click()}><FaRegImage color="#45bd62" /> Foto</button>
+                                <button onClick={() => postFotoRef.current.click()}><FaRegImage color="#45bd62" /> Foto/video</button>
                                 <button onClick={handlePublicar} disabled={loading} className="btn-send-fb">Publicar</button>
                                 <input type="file" ref={postFotoRef} style={{display: 'none'}} accept="image/*" onChange={(e) => handleImagePreview(e, 'post')} />
                             </div>
@@ -288,40 +275,31 @@ const Grupos = () => {
                         {grupoData.posts?.map(post => (
                             <div key={post._id} className="fb-card-white post-container">
                                 <div className="post-top-header">
-                                    <img src="https://via.placeholder.com/40" className="mini-avatar-fb" alt="u" />
+                                    <img src={grupoData.imagen || "https://via.placeholder.com/40"} className="mini-avatar-fb" alt="u" />
                                     <div className="post-user-meta">
                                         <span className="author-fb">{post.autor}</span>
-                                        <span className="time-fb">Administrador · 2 h · <FaUserFriends /></span>
+                                        <span className="time-fb">Hace un momento · <FaGlobeAmericas /></span>
                                     </div>
-                                    <div className="post-options-relative">
+                                    <div className="post-actions-right">
+                                        {/* Botón Guardar */}
+                                        <button 
+                                            className={`btn-save-post ${guardados[post._id] ? 'active' : ''}`}
+                                            onClick={() => toggleGuardar(post._id)}
+                                        >
+                                            {guardados[post._id] ? <FaBookmark /> : <FaRegBookmark />}
+                                        </button>
                                         <button className="btn-fb-options" onClick={(e) => handleToggleMenu(e, post._id)}><FaEllipsisH /></button>
-                                        {menuAbiertoId === post._id && (
-                                            <div className="dropdown-fb-style">
-                                                <div className="arrow-up-fb"></div>
-                                                <button className="fb-item"><FaRegFileAlt className="fb-icon" /> Tu contenido</button>
-                                                <button className="fb-item justify"><span><FaShare className="fb-icon" /> Compartir</span><FaChevronRight className="fb-arrow" /></button>
-                                                <button className="fb-item"><FaBell className="fb-icon" /> Notificaciones</button>
-                                            </div>
-                                        )}
                                     </div>
                                 </div>
 
                                 <div className="post-body-text">{post.contenido}</div>
 
                                 {post.foto && (
-                                    <div className="post-image-manga-style">
+                                    <div className="post-image-main">
                                         <img src={post.foto} className="img-full-post" alt="post" />
-                                        <div className="manga-badge">+33</div>
+                                        {/* Sin +33 */}
                                     </div>
                                 )}
-
-                                <div className="post-footer-metrics">
-                                    <div className="metrics-likes">
-                                        <FaHeart className="icon-h" />
-                                        <FaThumbsUp className="icon-l" />
-                                        <span>{post.autor} y 50 personas más</span>
-                                    </div>
-                                </div>
 
                                 <div className="post-action-buttons-fb">
                                     <button onClick={() => toggleLike(post._id)} className={likes[post._id] ? "liked" : ""}>
@@ -338,7 +316,7 @@ const Grupos = () => {
         );
     }
 
-    // --- RENDERIZADO DE LISTA DE GRUPOS (TU CÓDIGO ORIGINAL) ---
+    // --- VISTA LISTA DE GRUPOS ---
     return (
         <section className="grupos-page">
             <div className="grupos-header-top">
@@ -445,7 +423,7 @@ const Grupos = () => {
                 </div>
             )}
 
-            {/* SEGUNDO MODAL: AJUSTAR AVATAR */}
+            {/* MODAL CROPPER */}
             {imageToCrop && (
                 <div className="modal-overlay cropper-overlay">
                     <div className="vibe-modal-container cropper-modal">
@@ -464,15 +442,12 @@ const Grupos = () => {
                                     onZoomChange={setZoom}
                                     onRotationChange={setRotation}
                                     onCropComplete={onCropComplete}
-                                    cropShape="rect"
                                     showGrid={true}
                                 />
                             </div>
                             <div className="cropper-controls-vibe">
-                                <div className="control-group">
-                                    <label>Zoom: {zoom.toFixed(1)}</label>
-                                    <input type="range" min={1} max={3} step={0.1} value={zoom} onChange={(e) => setZoom(parseFloat(e.target.value))} />
-                                </div>
+                                <input type="range" min={1} max={3} step={0.1} value={zoom} onChange={(e) => setZoom(parseFloat(e.target.value))} />
+                                <input type="range" min={0} max={360} step={1} value={rotation} onChange={(e) => setRotation(parseInt(e.target.value))} />
                             </div>
                         </div>
                         <div className="cropper-footer">
