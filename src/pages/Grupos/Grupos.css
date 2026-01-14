@@ -416,3 +416,195 @@
     from { opacity: 0; transform: scale(0.95); }
     to { opacity: 1; transform: scale(1); }
 }
+
+/* --- ESTILO FACEBOOK / MANGA --- */
+.facebook-style {
+    background-color: #f0f2f5;
+    min-height: 100vh;
+}
+
+/* Header & Banner */
+.fb-header-container {
+    background: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding-bottom: 15px;
+}
+
+.fb-banner {
+    height: 350px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+.fb-profile-info {
+    max-width: 1050px;
+    margin: 0 auto;
+    display: flex;
+    align-items: flex-end;
+    padding: 0 30px;
+    position: relative;
+    margin-top: -30px;
+}
+
+.fb-avatar-wrapper {
+    position: relative;
+    border: 4px solid white;
+    border-radius: 50%;
+    background: white;
+}
+
+.fb-avatar-img {
+    width: 168px;
+    height: 168px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.fb-text-details {
+    margin-left: 20px;
+    margin-bottom: 20px;
+    flex-grow: 1;
+}
+
+.fb-name {
+    font-size: 32px;
+    font-weight: bold;
+    color: #050505;
+}
+
+.fb-friends-count {
+    color: #65676b;
+    font-weight: 600;
+}
+
+/* Cards */
+.fb-card-white {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    margin-bottom: 16px;
+    padding: 12px;
+}
+
+.fb-content-layout {
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    gap: 16px;
+    max-width: 1050px;
+    margin: 16px auto;
+    padding: 0 15px;
+}
+
+/* Post Cards */
+.post-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.circle-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.post-author {
+    font-weight: bold;
+    display: block;
+}
+
+.post-date {
+    font-size: 13px;
+    color: #65676b;
+}
+
+.post-image-grid {
+    position: relative;
+    margin: 10px -12px;
+    background: #000;
+}
+
+.post-main-img {
+    width: 100%;
+    max-height: 500px;
+    object-fit: contain;
+}
+
+.manga-overlay-badge {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+/* Dropdown Personalizado (Imagen 2) */
+.dropdown-fb-style {
+    position: absolute;
+    right: 0;
+    top: 40px;
+    background: white;
+    box-shadow: 0 12px 28px rgba(0,0,0,0.2);
+    border-radius: 8px;
+    width: 300px;
+    z-index: 100;
+    padding: 8px;
+}
+
+.fb-item {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    width: 100%;
+    border: none;
+    background: transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 600;
+    color: #050505;
+}
+
+.fb-item:hover {
+    background-color: #f2f2f2;
+}
+
+.fb-icon {
+    margin-right: 12px;
+    font-size: 18px;
+}
+
+/* Botones de acción del post */
+.post-actions-buttons {
+    display: flex;
+    border-top: 1px solid #ced0d4;
+    margin-top: 10px;
+    padding-top: 4px;
+}
+
+.post-actions-buttons button {
+    flex: 1;
+    background: none;
+    border: none;
+    padding: 8px;
+    color: #65676b;
+    font-weight: 600;
+    border-radius: 4px;
+}
+
+.post-actions-buttons button:hover {
+    background-color: #f2f2f2;
+}
+
+.active-like {
+    color: #1877f2 !important;
+}
