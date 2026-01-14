@@ -47,8 +47,8 @@ const Grupos = () => {
     const userEmail = localStorage.getItem("correo");
     const userName = localStorage.getItem("nombre") || "Usuario";
     
-    // OBTENEMOS LA FOTO (Asegúrate que la clave "fotoPerfil" sea la misma del Login)
-    const userPhoto = localStorage.getItem("fotoPerfil");
+    // OBTENEMOS LA FOTO (Usamos 'avatar' para que coincida con tu modelo de Mongoose)
+    const userPhoto = localStorage.getItem("avatar");
 
     // --- FUNCIONES DEL CROPPER ---
     const onCropComplete = useCallback((_ , pixels) => {
@@ -260,7 +260,6 @@ const Grupos = () => {
                     <main className="fb-feed-center">
                         <div className="fb-card-white publish-area">
                             <div className="publish-input-row">
-                                {/* CORRECCIÓN: Lógica para mostrar foto real o icono si no carga */}
                                 {userPhoto ? (
                                     <img 
                                         src={userPhoto} 
@@ -294,7 +293,6 @@ const Grupos = () => {
                         {grupoData.posts?.map(post => (
                             <div key={post._id} className="fb-card-white post-container">
                                 <div className="post-top-header">
-                                    {/* CORRECCIÓN: Priorizamos foto del autor guardada, si no tu foto actual */}
                                     {post.autorFoto ? (
                                         <img src={post.autorFoto} className="mini-avatar-fb" alt="autor" />
                                     ) : (post.autor === userName && userPhoto) ? (
