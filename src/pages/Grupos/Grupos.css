@@ -507,13 +507,14 @@
 .btn-fb-blue { background: #1877f2; color: white; border: none; padding: 8px 15px; border-radius: 6px; font-weight: 600; cursor: pointer; }
 .btn-fb-gray { background: #e4e6eb; color: #050505; border: none; padding: 8px 15px; border-radius: 6px; font-weight: 600; cursor: pointer; }
 
-/* Grid de muro */
+/* ✅ CORRECCIÓN: Grid centrado y dimensiones alargadas */
 .fb-body-grid {
-    display: grid;
-    grid-template-columns: 360px 500px;
-    justify-content: center;
+    display: flex; /* Cambiado de grid a flex para centrar */
+    flex-direction: column;
+    align-items: center; /* Centra las tarjetas horizontalmente */
     gap: 16px;
     padding: 16px;
+    width: 100%;
 }
 
 .fb-card-white {
@@ -522,6 +523,9 @@
     padding: 12px;
     box-shadow: 0 1px 2px rgba(0,0,0,0.1);
     margin-bottom: 16px;
+    width: 100%;
+    max-width: 680px; /* ✅ Tarjetas más largas */
+    box-sizing: border-box;
 }
 
 /* Feed & Manga Post */
@@ -535,6 +539,7 @@
     padding: 10px 15px;
     border-radius: 20px;
     outline: none;
+    color: #000;
 }
 
 .publish-footer-fb {
@@ -628,6 +633,7 @@
     border-radius: 6px;
     cursor: pointer;
     font-weight: 500;
+    color: #050505;
 }
 
 .fb-item:hover { background: #f2f2f2; }
