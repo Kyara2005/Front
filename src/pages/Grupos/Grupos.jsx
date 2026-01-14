@@ -4,7 +4,8 @@ import {
     FaPlus, FaArrowLeft, FaPaperPlane, 
     FaCamera, FaThumbsUp, FaComment, FaSearch, FaTimes, FaEllipsisH, FaShare, 
     FaHeart, FaBell, FaRegFileAlt, FaChevronRight, FaThumbtack, FaExclamationCircle, 
-    FaSignOutAlt, FaTrash, FaRegBookmark, FaBookmark, FaGlobeAmericas, FaRegImage, FaUserFriends
+    FaSignOutAlt, FaTrash, FaRegBookmark, FaBookmark, FaGlobeAmericas, FaRegImage, FaUserFriends,
+    FaUserCircle
 } from 'react-icons/fa';
 import './Grupos.css';
 
@@ -45,6 +46,8 @@ const Grupos = () => {
 
     const userEmail = localStorage.getItem("correo");
     const userName = localStorage.getItem("nombre") || "Usuario";
+    // AUMENTO: Obtener la foto de perfil del usuario logueado
+    const userPhoto = localStorage.getItem("fotoPerfil");
 
     // --- FUNCIONES DEL CROPPER ---
     const onCropComplete = useCallback((_ , pixels) => {
@@ -184,7 +187,8 @@ const Grupos = () => {
             const res = await fetch(`${API_URL}/${grupoActivo._id}/post`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ autor: userName, contenido: nuevoPost, foto: fotoPost })
+                // AUMENTO: Se envía autorFoto para que el post guarde tu imagen
+                body: JSON.stringify({ autor: userName, autorFoto: userPhoto, contenido: nuevoPost, foto: fotoPost })
             });
             const postGuardado = await res.json();
             setGrupos(prev => prev.map(g => g._id === grupoActivo._id ? { ...g, posts: [postGuardado, ...g.posts] } : g));
@@ -237,8 +241,9 @@ const Grupos = () => {
                                 <input type="file" ref={perfilInputRef} style={{display:'none'}} accept="image/*" onChange={(e) => handleImagePreview(e, 'perfil-update')} />
                             </div>
                             <div className="fb-name-stats">
-                                <h1>{grupoData.nombre}</h1>
-                                <p><FaGlobeAmericas /> Grupo Público · <b>{grupoData.miembrosArray?.length || 1} miembros</b></p>
+                                {/* AUMENTO: color negro */}
+                                <h1 style={{color: '#000'}}>{grupoData.nombre}</h1>
+                                <p style={{color: '#333'}}><FaGlobeAmericas /> Grupo Público · <b>{grupoData.miembrosArray?.length || 1} miembros</b></p>
                             </div>
                             <div className="fb-header-btns">
                                 <button className="btn-fb-blue"><FaPlus /> Invitar</button>
@@ -252,8 +257,14 @@ const Grupos = () => {
                     <main className="fb-feed-center">
                         <div className="fb-card-white publish-area">
                             <div className="publish-input-row">
-                                <img src="https://via.placeholder.com/40" className="mini-avatar-fb" alt="u" />
+                                {/* AUMENTO: Foto real del usuario en lugar de placeholder */}
+                                {userPhoto ? (
+                                    <img src={userPhoto} className="mini-avatar-fb" alt="u" />
+                                ) : (
+                                    <FaUserCircle size={40} color="#ccc" className="mini-avatar-fb" />
+                                )}
                                 <input 
+                                    style={{color: '#000'}}
                                     placeholder={`¿Qué compartes hoy, ${userName}?`} 
                                     value={nuevoPost}
                                     onChange={(e) => setNuevoPost(e.target.value)}
@@ -275,13 +286,18 @@ const Grupos = () => {
                         {grupoData.posts?.map(post => (
                             <div key={post._id} className="fb-card-white post-container">
                                 <div className="post-top-header">
-                                    <img src={grupoData.imagen || "https://via.placeholder.com/40"} className="mini-avatar-fb" alt="u" />
+                                    {/* AUMENTO: Foto del autor del post (coincidencia) */}
+                                    {post.autorFoto || userPhoto ? (
+                                        <img src={post.autorFoto || userPhoto} className="mini-avatar-fb" alt="u" />
+                                    ) : (
+                                        <FaUserCircle size={40} color="#ccc" className="mini-avatar-fb" />
+                                    )}
                                     <div className="post-user-meta">
-                                        <span className="author-fb">{post.autor}</span>
-                                        <span className="time-fb">Hace un momento · <FaGlobeAmericas /></span>
+                                        {/* AUMENTO: color negro */}
+                                        <span className="author-fb" style={{color: '#000'}}>{post.autor}</span>
+                                        <span className="time-fb" style={{color: '#65676b'}}>Hace un momento · <FaGlobeAmericas /></span>
                                     </div>
                                     <div className="post-actions-right">
-                                        {/* Botón Guardar */}
                                         <button 
                                             className={`btn-save-post ${guardados[post._id] ? 'active' : ''}`}
                                             onClick={() => toggleGuardar(post._id)}
@@ -292,21 +308,20 @@ const Grupos = () => {
                                     </div>
                                 </div>
 
-                                <div className="post-body-text">{post.contenido}</div>
+                                <div className="post-body-text" style={{color: '#000'}}>{post.contenido}</div>
 
                                 {post.foto && (
                                     <div className="post-image-main">
                                         <img src={post.foto} className="img-full-post" alt="post" />
-                                        {/* Sin +33 */}
                                     </div>
                                 )}
 
                                 <div className="post-action-buttons-fb">
-                                    <button onClick={() => toggleLike(post._id)} className={likes[post._id] ? "liked" : ""}>
+                                    <button onClick={() => toggleLike(post._id)} className={likes[post._id] ? "liked" : ""} style={{color: '#65676b'}}>
                                         <FaThumbsUp /> Me gusta
                                     </button>
-                                    <button><FaComment /> Comentar</button>
-                                    <button><FaShare /> Compartir</button>
+                                    <button style={{color: '#65676b'}}><FaComment /> Comentar</button>
+                                    <button style={{color: '#65676b'}}><FaShare /> Compartir</button>
                                 </div>
                             </div>
                         ))}
@@ -343,8 +358,8 @@ const Grupos = () => {
                         <div className="grupo-card-top-content">
                             <img src={grupo.imagen || "https://via.placeholder.com/150"} className="grupo-img-mini-square" alt={grupo.nombre} />
                             <div className="grupo-textos-info">
-                                <h3 className="grupo-nombre-bold">{grupo.nombre}</h3>
-                                <p className="ultima-visita">Tu última visita: hace poco</p>
+                                <h3 className="grupo-nombre-bold" style={{color: '#000'}}>{grupo.nombre}</h3>
+                                <p className="ultima-visita" style={{color: '#65676b'}}>Tu última visita: hace poco</p>
                             </div>
                         </div>
                         <div className="grupo-card-actions-row">
@@ -387,7 +402,7 @@ const Grupos = () => {
                             <button className="vibe-close-circle" onClick={() => setIsModalOpen(false)}>
                                 <FaTimes />
                             </button>
-                            <h3 className="vibe-modal-title-main">Nuevo Grupo</h3>
+                            <h3 className="vibe-modal-title-main" style={{color: '#000'}}>Nuevo Grupo</h3>
                         </div>
                         <form onSubmit={handleCrearGrupo}>
                             <div className="vibe-modal-content-body">
@@ -397,6 +412,7 @@ const Grupos = () => {
                                         className="vibe-input-field" 
                                         placeholder="Nombre de la comunidad" 
                                         required
+                                        style={{color: '#000'}}
                                         value={nuevoGrupo.nombre} 
                                         onChange={(e) => setNuevoGrupo({...nuevoGrupo, nombre: e.target.value})} 
                                     />
@@ -407,7 +423,7 @@ const Grupos = () => {
                                     ) : (
                                         <div className="vibe-upload-placeholder">
                                             <FaCamera className="vibe-camera-icon" />
-                                            <p>Subir foto de portada</p>
+                                            <p style={{color: '#65676b'}}>Subir foto de portada</p>
                                         </div>
                                     )}
                                 </div>
@@ -428,7 +444,7 @@ const Grupos = () => {
                 <div className="modal-overlay cropper-overlay">
                     <div className="vibe-modal-container cropper-modal">
                         <div className="cropper-header">
-                            <h3 className="vibe-modal-title-main">Ajustar Avatar</h3>
+                            <h3 className="vibe-modal-title-main" style={{color: '#000'}}>Ajustar Avatar</h3>
                         </div>
                         <div className="cropper-body">
                             <div className="crop-area-container">
