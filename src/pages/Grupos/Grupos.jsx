@@ -4,20 +4,17 @@ import {
     FaPlus, FaArrowLeft, FaPaperPlane, 
     FaCamera, FaThumbsUp, FaComment, FaSearch, FaTimes, FaEllipsisH, FaShare, 
     FaHeart, FaBell, FaRegFileAlt, FaChevronRight, FaThumbtack, FaExclamationCircle, FaSignOutAlt, FaTrash,
-    FaInfoCircle, FaShieldAlt, FaUserFriends, FaRegImage, FaChartBar, FaSmile
+    FaInfoCircle, FaShieldAlt, FaUserFriends, FaRegImage, FaSmile
 } from 'react-icons/fa';
 import './Grupos.css';
 
-const API_URL = "https://controversial-jacquette-vibe-u-d09f766e.koyeb.app/api/grupos";
+const API_URL = "http://localhost:3000/api/grupos";
 
 const Grupos = () => {
     const [grupos, setGrupos] = useState([]);
     const [filtro, setFiltro] = useState("");
     const [pestana, setPestana] = useState("todos");
     const [menuAbiertoId, setMenuAbiertoId] = useState(null);
-    
-    // --- ESTADO AUMENTADO: MODAL DE DETALLES DEL GRUPO ---
-    const [grupoParaDetalle, setGrupoParaDetalle] = useState(null);
 
     const [grupoActivo, setGrupoActivo] = useState(() => {
         const persistido = localStorage.getItem("ultimoGrupoVisitado");
@@ -30,6 +27,7 @@ const Grupos = () => {
     const [nuevoGrupo, setNuevoGrupo] = useState({ nombre: "", imagen: "" });
     const [loading, setLoading] = useState(false);
 
+    // ESTADOS PARA EL RECORTADOR (CROPPER)
     const [imageToCrop, setImageToCrop] = useState(null);
     const [crop, setCrop] = useState({ x: 0, y: 0 });
     const [zoom, setZoom] = useState(1);
@@ -47,6 +45,7 @@ const Grupos = () => {
     const userEmail = localStorage.getItem("correo");
     const userName = localStorage.getItem("nombre") || "Usuario";
 
+    // --- FUNCIONES DEL CROPPER ---
     const onCropComplete = useCallback((_ , pixels) => {
         setCroppedAreaPixels(pixels);
     }, []);
@@ -165,6 +164,8 @@ const Grupos = () => {
         reader.onloadend = () => {
             if (destino === 'grupo') setImageToCrop(reader.result);
             else if (destino === 'post') setFotoPost(reader.result);
+            else if (destino === 'banner-update') console.log("Nueva portada");
+            else if (destino === 'perfil-update') console.log("Nuevo perfil");
         };
         reader.readAsDataURL(file);
     };
@@ -209,65 +210,67 @@ const Grupos = () => {
         finally { setLoading(false); }
     };
 
-    // --- VISTA DE MURO AUMENTADA (ESTILO FACEBOOK/MANGA) ---
+    // --- RENDERIZADO DEL MURO ACTIVO (ESTILO FACEBOOK + MANGA) ---
     if (grupoActivo) {
         const grupoData = grupos.find(g => g._id === grupoActivo._id) || grupoActivo;
         return (
-            <div className="grupo-muro-wrapper facebook-layout">
-                {/* CABECERA ESTILO FACEBOOK (Imagen 1) */}
-                <div className="fb-header">
+            <div className="fb-layout">
+                {/* CABECERA (PORTADA Y PERFIL SUPERPUESTO) */}
+                <div className="fb-header-container">
                     <div className="fb-cover-photo" style={{ backgroundImage: `url(${grupoData.imagen})` }}>
-                        <button className="btn-back-fb" onClick={salirDeGrupo}><FaArrowLeft /></button>
+                        <button className="fb-back-btn" onClick={salirDeGrupo}><FaArrowLeft /></button>
+                        <button className="fb-edit-cover" onClick={() => bannerInputRef.current.click()}><FaCamera /> Editar portada</button>
+                        <input type="file" ref={bannerInputRef} style={{display:'none'}} accept="image/*" onChange={(e) => handleImagePreview(e, 'banner-update')} />
                     </div>
-                    <div className="fb-profile-section">
-                        <div className="fb-profile-container">
-                            <div className="fb-avatar-wrapper">
-                                <img src={grupoData.imagen || "https://via.placeholder.com/150"} alt="profile" className="fb-avatar-main" />
-                                <div className="fb-avatar-camera"><FaCamera /></div>
-                            </div>
-                            <div className="fb-profile-info-text">
-                                <h1 className="fb-profile-name">{grupoData.nombre}</h1>
-                                <p className="fb-profile-stats">{grupoData.miembrosArray?.length || 0} amigos</p>
-                            </div>
-                            <div className="fb-profile-actions">
-                                <button className="fb-btn-info"><FaInfoCircle /> Información sobre las contribuciones</button>
-                                <button className="fb-btn-edit"><FaCamera /> Editar perfil</button>
-                                <button className="fb-btn-view"><FaSearch /> Ver perfil</button>
+                    
+                    <div className="fb-profile-nav">
+                        <div className="fb-content-center">
+                            <div className="fb-avatar-section">
+                                <div className="fb-avatar-wrapper">
+                                    <img src={grupoData.imagen || "https://via.placeholder.com/150"} alt="avatar" className="fb-main-avatar" />
+                                    <button className="fb-avatar-cam-btn" onClick={() => perfilInputRef.current.click()}><FaCamera /></button>
+                                    <input type="file" ref={perfilInputRef} style={{display:'none'}} accept="image/*" onChange={(e) => handleImagePreview(e, 'perfil-update')} />
+                                    <div className="fb-like-badge"><FaThumbsUp /></div>
+                                </div>
+                                <div className="fb-name-stats">
+                                    <h1>{grupoData.nombre}</h1>
+                                    <p>{grupoData.miembrosArray?.length || 1} miembros</p>
+                                </div>
+                                <div className="fb-header-btns">
+                                    <button className="btn-fb-gray"><FaPlus /> Información sobre las contribuciones</button>
+                                    <button className="btn-fb-blue"><FaCamera /> Editar perfil</button>
+                                    <button className="btn-fb-gray"><FaSearch /> Ver perfil</button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div className="fb-body-content">
-                    {/* COLUMNA IZQUIERDA (INFO) */}
-                    <div className="fb-col-left">
+                <div className="fb-body-grid">
+                    {/* BARRA IZQUIERDA */}
+                    <aside className="fb-sidebar-left">
                         <div className="fb-card-white details-card">
+                            <h3>{userName}</h3>
+                            <p className="sub-text">Posts photos</p>
+                            <hr className="fb-hr" />
                             <h3>Detalles</h3>
-                            <p><FaRegFileAlt /> Comunidad oficial de {grupoData.nombre}</p>
-                            <p><FaPlus /> Creado por {grupoData.creadorEmail.split('@')[0]}</p>
-                            <button className="fb-btn-full">Editar detalles</button>
+                            <p><FaInfoCircle /> Comunidad oficial de {grupoData.nombre}</p>
+                            <button className="btn-full-fb">Editar detalles</button>
                         </div>
-                    </div>
+                    </aside>
 
                     {/* FEED CENTRAL */}
-                    <div className="fb-col-feed">
-                        {/* CUADRO DE PUBLICAR */}
+                    <main className="fb-feed-center">
                         <div className="fb-card-white publish-area">
                             <div className="publish-input-row">
-                                <img src="https://via.placeholder.com/40" className="user-avatar-small" alt="me" />
+                                <img src="https://via.placeholder.com/40" className="mini-avatar-fb" alt="u" />
                                 <input 
                                     type="text" 
-                                    placeholder={`¿Qué estás pensando, ${userName}?`} 
+                                    placeholder={`Publicar...`} 
                                     value={nuevoPost}
                                     onChange={(e) => setNuevoPost(e.target.value)}
                                 />
-                            </div>
-                            <hr className="fb-divider" />
-                            <div className="publish-actions-row">
-                                <button onClick={() => postFotoRef.current.click()}><FaRegImage color="#45bd62" /> Foto/video</button>
-                                <button><FaUserFriends color="#1877f2" /> Etiquetar amigos</button>
-                                <button><FaSmile color="#f7b928" /> Sentimiento/actividad</button>
-                                <input type="file" ref={postFotoRef} style={{display: 'none'}} accept="image/*" onChange={(e) => handleImagePreview(e, 'post')} />
+                                <FaEllipsisH className="text-muted" />
                             </div>
                             {fotoPost && (
                                 <div className="fb-post-preview">
@@ -275,55 +278,47 @@ const Grupos = () => {
                                     <button onClick={() => setFotoPost(null)}><FaTimes /></button>
                                 </div>
                             )}
-                            {(nuevoPost.trim() || fotoPost) && (
-                                <button className="fb-btn-post-submit" onClick={handlePublicar} disabled={loading}>
-                                    {loading ? "Publicando..." : "Publicar"}
-                                </button>
-                            )}
+                            <div className="publish-footer-fb">
+                                <button onClick={() => postFotoRef.current.click()}><FaRegImage color="#45bd62" /> Foto</button>
+                                <button onClick={handlePublicar} disabled={loading} className="btn-send-fb">Publicar</button>
+                                <input type="file" ref={postFotoRef} style={{display: 'none'}} accept="image/*" onChange={(e) => handleImagePreview(e, 'post')} />
+                            </div>
                         </div>
 
-                        {/* LISTA DE PUBLICACIONES (Imagen 3) */}
                         {grupoData.posts?.map(post => (
                             <div key={post._id} className="fb-card-white post-container">
                                 <div className="post-top-header">
-                                    <img src="https://via.placeholder.com/40" className="user-avatar-small" alt="u" />
+                                    <img src="https://via.placeholder.com/40" className="mini-avatar-fb" alt="u" />
                                     <div className="post-user-meta">
-                                        <span className="post-author-name">{post.autor}</span>
-                                        <span className="post-timestamp">Administrador · 22 h · <FaUserFriends /></span>
+                                        <span className="author-fb">{post.autor}</span>
+                                        <span className="time-fb">Administrador · 2 h · <FaUserFriends /></span>
                                     </div>
                                     <div className="post-options-relative">
-                                        <button className="btn-post-options" onClick={(e) => handleToggleMenu(e, post._id)}><FaEllipsisH /></button>
-                                        {/* DROPDOWN ESTILO IMAGEN 2 */}
+                                        <button className="btn-fb-options" onClick={(e) => handleToggleMenu(e, post._id)}><FaEllipsisH /></button>
                                         {menuAbiertoId === post._id && (
                                             <div className="dropdown-fb-style">
                                                 <div className="arrow-up-fb"></div>
                                                 <button className="fb-item"><FaRegFileAlt className="fb-icon" /> Tu contenido</button>
                                                 <button className="fb-item justify"><span><FaShare className="fb-icon" /> Compartir</span><FaChevronRight className="fb-arrow" /></button>
-                                                <button className="fb-item"><FaBell className="fb-icon" /> Administrar notificaciones</button>
-                                                <button className="fb-item"><FaThumbtack className="fb-icon" /> Destacar grupo</button>
-                                                <button className="fb-item"><FaExclamationCircle className="fb-icon" /> Reportar grupo</button>
+                                                <button className="fb-item"><FaBell className="fb-icon" /> Notificaciones</button>
                                             </div>
                                         )}
                                     </div>
                                 </div>
 
-                                <div className="post-body-text">
-                                    {post.contenido}
-                                </div>
+                                <div className="post-body-text">{post.contenido}</div>
 
                                 {post.foto && (
                                     <div className="post-image-manga-style">
                                         <img src={post.foto} className="img-full-post" alt="post" />
-                                        <div className="manga-badge">+{Math.floor(Math.random() * 50)}</div>
+                                        <div className="manga-badge">+33</div>
                                     </div>
                                 )}
 
                                 <div className="post-footer-metrics">
                                     <div className="metrics-likes">
-                                        <div className="icons-likes">
-                                            <FaHeart className="icon-h" />
-                                            <FaThumbsUp className="icon-l" />
-                                        </div>
+                                        <FaHeart className="icon-h" />
+                                        <FaThumbsUp className="icon-l" />
                                         <span>{post.autor} y 50 personas más</span>
                                     </div>
                                 </div>
@@ -337,12 +332,13 @@ const Grupos = () => {
                                 </div>
                             </div>
                         ))}
-                    </div>
+                    </main>
                 </div>
             </div>
         );
     }
 
+    // --- RENDERIZADO DE LISTA DE GRUPOS (TU CÓDIGO ORIGINAL) ---
     return (
         <section className="grupos-page">
             <div className="grupos-header-top">
@@ -359,12 +355,10 @@ const Grupos = () => {
                 <FaSearch className="icon-s" />
                 <input type="text" placeholder="Buscar grupos..." value={filtro} onChange={(e) => setFiltro(e.target.value)} />
             </div>
-
             <div className="tabs-vibe">
                 <button className={pestana === "todos" ? "active" : ""} onClick={() => setPestana("todos")}>Todos los grupos</button>
                 <button className={pestana === "mis-grupos" ? "active" : ""} onClick={() => setPestana("mis-grupos")}>Mis grupos</button>
             </div>
-
             <div className="grupos-grid-moderno">
                 {grupos.filter(g => g.nombre?.toLowerCase().includes(filtro.toLowerCase())).map(grupo => (
                     <div key={grupo._id} className="grupo-card-row">
@@ -387,9 +381,6 @@ const Grupos = () => {
                                 {menuAbiertoId === grupo._id && (
                                     <div className="dropdown-fb-style">
                                         <div className="arrow-up-fb"></div>
-                                        <button className="fb-item" onClick={(e) => { e.stopPropagation(); setGrupoParaDetalle(grupo); }}>
-                                            <FaInfoCircle className="fb-icon" /> Información del grupo
-                                        </button>
                                         <button className="fb-item"><FaRegFileAlt className="fb-icon" /> Tu contenido</button>
                                         <button className="fb-item justify"><span><FaShare className="fb-icon" /> Compartir</span><FaChevronRight className="fb-arrow" /></button>
                                         {grupo.creadorEmail === userEmail ? (
@@ -401,6 +392,7 @@ const Grupos = () => {
                                                 <FaSignOutAlt className="fb-icon" /> Abandonar grupo
                                             </button>
                                         ) : null}
+                                        <button className="fb-item"><FaBell className="fb-icon" /> Notificaciones</button>
                                     </div>
                                 )}
                             </div>
@@ -408,63 +400,6 @@ const Grupos = () => {
                     </div>
                 ))}
             </div>
-
-            {/* --- MODAL AUMENTADO: DETALLES Y OPCIONES DE GRUPO --- */}
-            {grupoParaDetalle && (
-                <div className="modal-overlay" onClick={() => setGrupoParaDetalle(null)}>
-                    <div className="vibe-modal-container modal-detalle-grupo" onClick={(e) => e.stopPropagation()}>
-                        <div className="vibe-modal-header">
-                            <button className="vibe-close-circle" onClick={() => setGrupoParaDetalle(null)}>
-                                <FaTimes />
-                            </button>
-                            <h3 className="vibe-modal-title-main">Opciones de Comunidad</h3>
-                        </div>
-                        <div className="vibe-modal-content-body">
-                            <div className="detalle-grupo-header-mini">
-                                <img src={grupoParaDetalle.imagen} alt="p" className="img-detalle-circle" />
-                                <div>
-                                    <h4>{grupoParaDetalle.nombre}</h4>
-                                    <p>{grupoParaDetalle.miembrosArray?.length} Miembros • Privacidad Pública</p>
-                                </div>
-                            </div>
-                            <hr className="vibe-hr" />
-                            <div className="lista-opciones-detalle">
-                                <div className="opcion-item-vibe">
-                                    <FaShieldAlt className="opcion-icon" />
-                                    <div className="opcion-text">
-                                        <span>Reglas del grupo</span>
-                                        <p>Consulta las normas de convivencia</p>
-                                    </div>
-                                </div>
-                                <div className="opcion-item-vibe">
-                                    <FaUserFriends className="opcion-icon" />
-                                    <div className="opcion-text">
-                                        <span>Administradores</span>
-                                        <p>Contactar con el equipo de gestión</p>
-                                    </div>
-                                </div>
-                                <div className="opcion-item-vibe">
-                                    <FaBell className="opcion-icon" />
-                                    <div className="opcion-text">
-                                        <span>Notificaciones</span>
-                                        <p>Gestionar alertas de actividad</p>
-                                    </div>
-                                </div>
-                                <div className="opcion-item-vibe">
-                                    <FaThumbtack className="opcion-icon" />
-                                    <div className="opcion-text">
-                                        <span>Fijar grupo</span>
-                                        <p>Mantener al inicio de tu lista</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="vibe-modal-footer">
-                            <button className="vibe-btn-primary-full" onClick={() => setGrupoParaDetalle(null)}>Cerrar</button>
-                        </div>
-                    </div>
-                </div>
-            )}
 
             {/* MODAL DE CREACIÓN */}
             {isModalOpen && (
@@ -515,7 +450,7 @@ const Grupos = () => {
                 <div className="modal-overlay cropper-overlay">
                     <div className="vibe-modal-container cropper-modal">
                         <div className="cropper-header">
-                            <h3 className="vibe-modal-title-main">Ajustar Imagen</h3>
+                            <h3 className="vibe-modal-title-main">Ajustar Avatar</h3>
                         </div>
                         <div className="cropper-body">
                             <div className="crop-area-container">
@@ -534,12 +469,15 @@ const Grupos = () => {
                                 />
                             </div>
                             <div className="cropper-controls-vibe">
-                                <input type="range" min={1} max={3} step={0.1} value={zoom} onChange={(e) => setZoom(parseFloat(e.target.value))} />
+                                <div className="control-group">
+                                    <label>Zoom: {zoom.toFixed(1)}</label>
+                                    <input type="range" min={1} max={3} step={0.1} value={zoom} onChange={(e) => setZoom(parseFloat(e.target.value))} />
+                                </div>
                             </div>
                         </div>
                         <div className="cropper-footer">
                             <button className="btn-cancel-vibe" onClick={() => setImageToCrop(null)}>Cancelar</button>
-                            <button className="btn-confirm-vibe" onClick={handleConfirmCrop}>Guardar Recorte</button>
+                            <button className="btn-confirm-vibe" onClick={handleConfirmCrop}>Recortar y Guardar</button>
                         </div>
                     </div>
                 </div>
