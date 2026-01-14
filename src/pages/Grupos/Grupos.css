@@ -520,12 +520,15 @@
 .fb-card-white {
     background: white;
     border-radius: 8px;
-    padding: 12px 20px;
+    /* Ajustamos: 12px arriba/abajo, 0 a los lados para la imagen */
+    padding: 12px 0px; 
     box-shadow: 0 1px 2px rgba(0,0,0,0.1);
     margin-bottom: 16px;
     width: 100%;
-    max-width: 750px; /* ✅ Tarjetas más largas */
+    /* ✅ ESTE ES EL ANCHO QUE BUSCAS */
+    max-width: 680px; 
     box-sizing: border-box;
+    overflow: hidden;
 }
 
 /* Feed & Manga Post */
