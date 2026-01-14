@@ -37,14 +37,14 @@ const Grupos = () => {
     const [guardados, setGuardados] = useState({});
 
     // ESTADOS DEL USUARIO
-    const [userName, setUserName] = useState("Usuario");
-    const [avatar, setAvatar] = useState(null);
+    const [userName, setUserName] = useState(localStorage.getItem("nombre") || "Usuario");
+    const [avatar, setAvatar] = useState(localStorage.getItem("avatar") || null);
     const userEmail = localStorage.getItem("correo");
 
     const fileInputRef = useRef(null);
     const postFotoRef = useRef(null);
 
-    // Cargar perfil del usuario
+    // Cargar perfil del usuario actualizado
     useEffect(() => {
         const fetchUserInfo = async () => {
             try {
@@ -54,8 +54,14 @@ const Grupos = () => {
                     `https://controversial-jacquette-vibe-u-d09f766e.koyeb.app/api/usuarios/perfil`, 
                     { headers: { Authorization: `Bearer ${token}` } }
                 );
-                if (response.data?.nombre) setUserName(response.data.nombre);
-                if (response.data?.avatar) setAvatar(response.data.avatar);
+                if (response.data?.nombre) {
+                    setUserName(response.data.nombre);
+                    localStorage.setItem("nombre", response.data.nombre);
+                }
+                if (response.data?.avatar) {
+                    setAvatar(response.data.avatar);
+                    localStorage.setItem("avatar", response.data.avatar);
+                }
             } catch (error) {
                 console.error("Error al obtener el perfil:", error);
             }
@@ -165,13 +171,20 @@ const Grupos = () => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
                     autor: userName, 
-                    autorFoto: avatar, 
+                    autorFoto: avatar, // Aquí enviamos tu avatar actual
                     contenido: nuevoPost, 
                     foto: fotoPost 
                 })
             });
             const postGuardado = await res.json();
-            setGrupos(prev => prev.map(g => g._id === grupoActivo._id ? { ...g, posts: [postGuardado, ...g.posts] } : g));
+            
+            // Actualizamos el estado local de los grupos para ver el post al instante
+            setGrupos(prev => prev.map(g => 
+                g._id === grupoActivo._id 
+                ? { ...g, posts: [postGuardado, ...(g.posts || [])] } 
+                : g
+            ));
+            
             setNuevoPost(""); 
             setFotoPost(null);
         } catch (error) { console.error(error); }
@@ -203,7 +216,6 @@ const Grupos = () => {
     const entrarAGrupo = (grupo) => setGrupoActivo(grupo);
     const salirDeGrupo = () => setGrupoActivo(null);
     const toggleLike = (postId) => setLikes(prev => ({ ...prev, [postId]: !prev[postId] }));
-    const toggleGuardar = (postId) => setGuardados(prev => ({ ...prev, [postId]: !prev[postId] }));
 
     // --- RENDERIZADO MURO ACTIVO ---
     if (grupoActivo) {
@@ -233,75 +245,93 @@ const Grupos = () => {
                 </div>
 
                 <div className="fb-body-grid">
-                    <div className="fb-feed-center" style={{ width: '100%', maxWidth: '900px' }}>
+                    <div className="fb-feed-center">
                         
-                        {/* AREA DE PUBLICAR */}
-                        <div className="fb-card-white">
+                        {/* AREA DE PUBLICAR (Corregida con tu avatar) */}
+                        <div className="fb-card-white publish-card">
                             <div className="publish-input-row">
-                                {avatar ? <img src={avatar} className="mini-avatar-fb" alt="yo" /> : <FaUserCircle size={40} color="#ccc" className="mini-avatar-fb" />}
+                                {avatar ? (
+                                    <img src={avatar} className="mini-avatar-fb" alt="perfil" />
+                                ) : (
+                                    <FaUserCircle size={40} color="#ccc" className="mini-avatar-fb" />
+                                )}
                                 <input 
-                                    placeholder={`¿Qué compartes hoy, ${userName}?`} 
+                                    className="fb-fake-input"
+                                    placeholder={`¿Qué estás pensando, ${userName}?`} 
                                     value={nuevoPost}
                                     onChange={(e) => setNuevoPost(e.target.value)}
                                 />
                             </div>
                             {fotoPost && (
-                                <div className="fb-post-preview-container" style={{padding: '10px', position: 'relative'}}>
-                                    <img src={fotoPost} alt="preview" style={{width: '100%', borderRadius: '8px'}} />
+                                <div className="fb-post-preview-container">
+                                    <img src={fotoPost} alt="preview" />
                                     <button className="vibe-close-circle" onClick={() => setFotoPost(null)}><FaTimes /></button>
                                 </div>
                             )}
                             <div className="publish-footer-fb">
                                 <button onClick={() => postFotoRef.current.click()}><FaRegImage color="#45bd62" /> Foto/video</button>
-                                <button onClick={handlePublicar} disabled={loading} className="btn-fb-blue" style={{borderRadius: '6px', padding: '6px 20px'}}>Publicar</button>
+                                <button onClick={handlePublicar} disabled={loading} className="btn-fb-blue-solid">Publicar</button>
                                 <input type="file" ref={postFotoRef} style={{display: 'none'}} accept="image/*" onChange={(e) => handleImagePreview(e, 'post')} />
                             </div>
                         </div>
 
-                        {/* LISTA DE POSTS */}
-                        {grupoData.posts?.map(post => (
-                            <div key={post._id} className="fb-card-white">
-                                <div className="post-top-header">
-                                    {post.autor === userName ? (
-                                        avatar ? <img src={avatar} className="mini-avatar-fb" alt="yo" /> : <FaUserCircle size={40} color="#ccc" className="mini-avatar-fb" />
-                                    ) : (
-                                        post.autorFoto ? <img src={post.autorFoto} className="mini-avatar-fb" alt="autor" /> : <FaUserCircle size={40} color="#ccc" className="mini-avatar-fb" />
+                        {/* LISTA DE POSTS (Lógica de avatar robusta) */}
+                        {grupoData.posts?.map(post => {
+                            // Lógica para decidir qué foto mostrar:
+                            // 1. Si el autor del post eres tú, mostramos SIEMPRE tu avatar actual del estado.
+                            // 2. Si no eres tú, mostramos la foto que venga en el post o un icono por defecto.
+                            const esMiPost = post.autor === userName;
+                            const fotoAMostrar = esMiPost ? (avatar || post.autorFoto) : post.autorFoto;
+
+                            return (
+                                <div key={post._id} className="fb-card-white post-card-adjusted">
+                                    <div className="post-top-header">
+                                        <div className="post-header-left">
+                                            {fotoAMostrar ? (
+                                                <img src={fotoAMostrar} className="mini-avatar-fb" alt="autor" />
+                                            ) : (
+                                                <FaUserCircle size={40} color="#ccc" className="mini-avatar-fb" />
+                                            )}
+                                            <div className="post-user-meta">
+                                                <span className="author-fb-bold">{post.autor}</span>
+                                                <span className="time-fb-gray">Ahora · <FaGlobeAmericas size={12}/></span>
+                                            </div>
+                                        </div>
+                                        <button className="btn-dots-gray" onClick={(e) => handleToggleMenu(e, post._id)}><FaEllipsisH /></button>
+                                    </div>
+
+                                    <div className="post-body-content">{post.contenido}</div>
+
+                                    {post.foto && (
+                                        <div className="post-image-full-width">
+                                            <img src={post.foto} alt="contenido" />
+                                        </div>
                                     )}
-                                    <div className="post-user-meta">
-                                        <span className="author-fb">{post.autor}</span>
-                                        <span className="time-fb">Ahora · <FaGlobeAmericas /></span>
+
+                                    <div className="post-footer-stats">
+                                        <div className="fb-like-count">
+                                            <div className="blue-circle-like"><FaThumbsUp size={10} color="white"/></div>
+                                            <span>{likes[post._id] ? 'Tú y 0 personas' : '0 personas'}</span>
+                                        </div>
                                     </div>
-                                    <button className="btn-dots-gray" onClick={(e) => handleToggleMenu(e, post._id)}><FaEllipsisH /></button>
-                                </div>
 
-                                <div className="post-body-text" style={{padding: '0 24px 12px 24px', color: '#050505'}}>{post.contenido}</div>
-
-                                {post.foto && (
-                                    <div className="post-image-manga-style">
-                                        <img src={post.foto} className="img-full-post" alt="post" />
+                                    <div className="post-action-buttons-fb-grid">
+                                        <button onClick={() => toggleLike(post._id)} className={likes[post._id] ? "active-blue" : ""}>
+                                            <FaThumbsUp /> Me gusta
+                                        </button>
+                                        <button><FaComment /> Comentar</button>
+                                        <button><FaShare /> Compartir</button>
                                     </div>
-                                )}
-
-                                <div className="post-footer-metrics">
-                                    <FaThumbsUp color="#1877f2" /> {likes[post._id] ? 'Tú y otros' : '0 personas'}
                                 </div>
-
-                                <div className="post-action-buttons-fb">
-                                    <button onClick={() => toggleLike(post._id)} className={likes[post._id] ? "liked" : ""}>
-                                        <FaThumbsUp /> Me gusta
-                                    </button>
-                                    <button><FaComment /> Comentar</button>
-                                    <button><FaShare /> Compartir</button>
-                                </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 </div>
             </div>
         );
     }
 
-    // --- RENDERIZADO LISTA DE GRUPOS ---
+    // Render de la lista principal (Comunidades)
     return (
         <section className="grupos-page">
             <div className="grupos-header-top">
@@ -338,20 +368,7 @@ const Grupos = () => {
                             ) : (
                                 <button className="btn-ver-grupo-vibe-blue" onClick={() => handleUnirseGrupo(grupo)}>Unirse</button>
                             )}
-                            <div style={{position: 'relative'}}>
-                                <button className="btn-dots-gray" onClick={(e) => handleToggleMenu(e, grupo._id)}><FaEllipsisH /></button>
-                                {menuAbiertoId === grupo._id && (
-                                    <div className="dropdown-fb-style" style={{right: 0, top: '40px'}}>
-                                        <button className="fb-item"><FaRegFileAlt className="fb-icon" /> Contenido</button>
-                                        <button className="fb-item"><FaShare className="fb-icon" /> Compartir</button>
-                                        {grupo.creadorEmail === userEmail ? (
-                                            <button className="fb-item" onClick={() => handleEliminarGrupo(grupo._id)}><FaTrash className="fb-icon" style={{color: 'red'}} /> Eliminar</button>
-                                        ) : grupo.miembrosArray?.includes(userEmail) ? (
-                                            <button className="fb-item" onClick={() => handleAbandonarGrupo(grupo._id)}><FaSignOutAlt className="fb-icon" /> Salir</button>
-                                        ) : null}
-                                    </div>
-                                )}
-                            </div>
+                            <button className="btn-dots-gray" onClick={(e) => handleToggleMenu(e, grupo._id)}><FaEllipsisH /></button>
                         </div>
                     </div>
                 ))}
@@ -375,22 +392,6 @@ const Grupos = () => {
                             </div>
                             <button type="submit" className="vibe-btn-primary-full" disabled={loading}>{loading ? "Cargando..." : "Crear Comunidad"}</button>
                         </form>
-                    </div>
-                </div>
-            )}
-
-            {/* MODAL CROPPER */}
-            {imageToCrop && (
-                <div className="modal-overlay cropper-overlay">
-                    <div className="vibe-modal-container cropper-modal">
-                        <div className="cropper-header"><h3>Ajustar Foto</h3></div>
-                        <div className="crop-area-container">
-                            <Cropper image={imageToCrop} crop={crop} zoom={zoom} rotation={rotation} aspect={16 / 9} onCropChange={setCrop} onZoomChange={setZoom} onRotationChange={setRotation} onCropComplete={onCropComplete} />
-                        </div>
-                        <div className="cropper-footer">
-                            <button className="btn-cancel-vibe" onClick={() => setImageToCrop(null)}>Cancelar</button>
-                            <button className="btn-confirm-vibe" onClick={handleConfirmCrop}>Guardar</button>
-                        </div>
                     </div>
                 </div>
             )}
