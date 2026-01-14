@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, BrowserRouter } from "react-router-dom";
 import { useEffect } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css";
@@ -50,7 +50,7 @@ function App() {
   }, []);
 
   return (
-    <HashRouter>
+    <BrowserRouter>
       <Routes>
 
         {/* ===================== */}
@@ -90,7 +90,7 @@ function App() {
         <Route path="beneficios" element={<Beneficios />} />
 
       </Routes>
-    </HashRouter>
+    </BrowserRouter>
   );
 }
 
