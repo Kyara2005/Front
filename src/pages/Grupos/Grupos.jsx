@@ -1,11 +1,12 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import Cropper from 'react-easy-crop';
+import axios from 'axios';
 import { 
     FaPlus, FaArrowLeft, FaPaperPlane, 
     FaCamera, FaThumbsUp, FaComment, FaSearch, FaTimes, FaEllipsisH, FaShare, 
     FaHeart, FaBell, FaRegFileAlt, FaChevronRight, FaThumbtack, FaExclamationCircle, 
     FaSignOutAlt, FaTrash, FaRegBookmark, FaBookmark, FaGlobeAmericas, FaRegImage, FaUserFriends,
-    FaUserCircle
+    FaUserCircle 
 } from 'react-icons/fa';
 import './Grupos.css';
 
@@ -39,16 +40,34 @@ const Grupos = () => {
     const [likes, setLikes] = useState({});
     const [guardados, setGuardados] = useState({});
 
+    // ESTADOS DEL USUARIO (Sincronizados con tu MUsuario para que NO salga gris)
+    const [userName, setUserName] = useState("Usuario");
+    const [avatar, setAvatar] = useState(null);
+    const userEmail = localStorage.getItem("correo");
+
     const fileInputRef = useRef(null);
     const postFotoRef = useRef(null);
     const bannerInputRef = useRef(null);
     const perfilInputRef = useRef(null);
 
-    const userEmail = localStorage.getItem("correo");
-    const userName = localStorage.getItem("nombre") || "Usuario";
-    
-    // OBTENEMOS LA FOTO (Usamos 'avatar' para que coincida con tu modelo de Mongoose)
-    const userPhoto = localStorage.getItem("avatar");
+    // --- CARGAR PERFIL IGUAL QUE EN MUSUARIO PARA QUE ASOME LA FOTO ---
+    useEffect(() => {
+        const fetchUserInfo = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) return;
+                const response = await axios.get(
+                    `https://controversial-jacquette-vibe-u-d09f766e.koyeb.app/api/usuarios/perfil`, 
+                    { headers: { Authorization: `Bearer ${token}` } }
+                );
+                if (response.data?.nombre) setUserName(response.data.nombre);
+                if (response.data?.avatar) setAvatar(response.data.avatar);
+            } catch (error) {
+                console.error("Error al obtener el perfil en grupos:", error);
+            }
+        };
+        fetchUserInfo();
+    }, []);
 
     // --- FUNCIONES DEL CROPPER ---
     const onCropComplete = useCallback((_ , pixels) => {
@@ -62,26 +81,20 @@ const Grupos = () => {
             await image.decode();
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
-
             canvas.width = croppedAreaPixels.width;
             canvas.height = croppedAreaPixels.height;
-
             ctx.translate(canvas.width / 2, canvas.height / 2);
             ctx.rotate((rotation * Math.PI) / 180);
             ctx.translate(-canvas.width / 2, -canvas.height / 2);
-
             ctx.drawImage(
                 image,
                 croppedAreaPixels.x, croppedAreaPixels.y, croppedAreaPixels.width, croppedAreaPixels.height,
                 0, 0, croppedAreaPixels.width, croppedAreaPixels.height
             );
-
             const result = canvas.toDataURL('image/jpeg');
             setNuevoGrupo({ ...nuevoGrupo, imagen: result });
             setImageToCrop(null); 
-        } catch (e) {
-            console.error("Error al recortar", e);
-        }
+        } catch (e) { console.error("Error al recortar", e); }
     };
 
     const handleUnirseGrupo = async (grupo) => {
@@ -95,10 +108,7 @@ const Grupos = () => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ correo: userEmail })
             });
-            if (res.ok) {
-                alert("Te has unido al grupo");
-                cargarGrupos();
-            }
+            if (res.ok) { alert("Te has unido al grupo"); cargarGrupos(); }
         } catch (error) { console.error(error); }
     };
 
@@ -110,10 +120,7 @@ const Grupos = () => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ correo: userEmail })
             });
-            if (res.ok) {
-                alert("Has abandonado el grupo");
-                cargarGrupos();
-            }
+            if (res.ok) { alert("Has abandonado el grupo"); cargarGrupos(); }
         } catch (error) { console.error(error); }
     };
 
@@ -121,11 +128,7 @@ const Grupos = () => {
         if (!window.confirm("¿ESTÁS SEGURO? Esta acción eliminará el grupo permanentemente.")) return;
         try {
             const res = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
-            if (res.ok) {
-                alert("Grupo eliminado");
-                cargarGrupos();
-                if (grupoActivo?._id === id) setGrupoActivo(null);
-            }
+            if (res.ok) { alert("Grupo eliminado"); cargarGrupos(); if (grupoActivo?._id === id) setGrupoActivo(null); }
         } catch (error) { console.error(error); }
     };
 
@@ -148,9 +151,7 @@ const Grupos = () => {
             const res = await fetch(`${API_URL}/listar`);
             const data = await res.json();
             setGrupos(data);
-        } catch (error) {
-            console.error("Error al cargar grupos:", error);
-        }
+        } catch (error) { console.error("Error al cargar grupos:", error); }
     };
 
     useEffect(() => { cargarGrupos(); }, []);
@@ -158,7 +159,6 @@ const Grupos = () => {
     const entrarAGrupo = (grupo) => setGrupoActivo(grupo);
     const salirDeGrupo = () => setGrupoActivo(null);
 
-    const toggleFavorito = (postId) => setFavoritos(prev => ({ ...prev, [postId]: !prev[postId] }));
     const toggleLike = (postId) => setLikes(prev => ({ ...prev, [postId]: !prev[postId] }));
     const toggleGuardar = (postId) => setGuardados(prev => ({ ...prev, [postId]: !prev[postId] }));
 
@@ -174,8 +174,6 @@ const Grupos = () => {
         reader.onloadend = () => {
             if (destino === 'grupo') setImageToCrop(reader.result);
             else if (destino === 'post') setFotoPost(reader.result);
-            else if (destino === 'banner-update') console.log("Nueva portada");
-            else if (destino === 'perfil-update') console.log("Nuevo perfil");
         };
         reader.readAsDataURL(file);
     };
@@ -190,7 +188,7 @@ const Grupos = () => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
                     autor: userName, 
-                    autorFoto: userPhoto, 
+                    autorFoto: avatar, 
                     contenido: nuevoPost, 
                     foto: fotoPost 
                 })
@@ -225,7 +223,7 @@ const Grupos = () => {
         finally { setLoading(false); }
     };
 
-    // --- RENDERIZADO DEL MURO ACTIVO ---
+    // --- RENDERIZADO DEL MURO ---
     if (grupoActivo) {
         const grupoData = grupos.find(g => g._id === grupoActivo._id) || grupoActivo;
         return (
@@ -233,16 +231,12 @@ const Grupos = () => {
                 <div className="fb-header-container">
                     <div className="fb-cover-photo" style={{ backgroundImage: `url(${grupoData.imagen})` }}>
                         <button className="fb-back-btn" onClick={salirDeGrupo}><FaArrowLeft /></button>
-                        <button className="fb-edit-cover" onClick={() => bannerInputRef.current.click()}><FaCamera /> Editar portada</button>
-                        <input type="file" ref={bannerInputRef} style={{display:'none'}} accept="image/*" onChange={(e) => handleImagePreview(e, 'banner-update')} />
+                        <button className="fb-edit-cover"><FaCamera /> Editar portada</button>
                     </div>
-                    
                     <div className="fb-profile-nav">
                         <div className="fb-avatar-section">
                             <div className="fb-avatar-wrapper">
                                 <img src={grupoData.imagen || "https://via.placeholder.com/150"} alt="avatar" className="fb-main-avatar" />
-                                <button className="fb-avatar-cam-btn" onClick={() => perfilInputRef.current.click()}><FaCamera /></button>
-                                <input type="file" ref={perfilInputRef} style={{display:'none'}} accept="image/*" onChange={(e) => handleImagePreview(e, 'perfil-update')} />
                             </div>
                             <div className="fb-name-stats">
                                 <h1 style={{color: '#000'}}>{grupoData.nombre}</h1>
@@ -260,16 +254,11 @@ const Grupos = () => {
                     <main className="fb-feed-center">
                         <div className="fb-card-white publish-area">
                             <div className="publish-input-row">
-                                {userPhoto ? (
-                                    <img 
-                                        src={userPhoto} 
-                                        className="mini-avatar-fb" 
-                                        alt="perfil" 
-                                        onError={(e) => { e.target.style.display = 'none'; }} 
-                                    />
-                                ) : null}
-                                {(!userPhoto) && <FaUserCircle size={40} color="#ccc" className="mini-avatar-fb" />}
-
+                                {avatar ? (
+                                    <img src={avatar} className="mini-avatar-fb" alt="yo" />
+                                ) : (
+                                    <FaUserCircle size={40} color="#ccc" className="mini-avatar-fb" />
+                                )}
                                 <input 
                                     style={{color: '#000'}}
                                     placeholder={`¿Qué compartes hoy, ${userName}?`} 
@@ -293,41 +282,22 @@ const Grupos = () => {
                         {grupoData.posts?.map(post => (
                             <div key={post._id} className="fb-card-white post-container">
                                 <div className="post-top-header">
-                                    {post.autorFoto ? (
-                                        <img src={post.autorFoto} className="mini-avatar-fb" alt="autor" />
-                                    ) : (post.autor === userName && userPhoto) ? (
-                                        <img src={userPhoto} className="mini-avatar-fb" alt="yo" />
-                                    ) : (
-                                        <FaUserCircle size={40} color="#ccc" className="mini-avatar-fb" />
-                                    )}
-
+                                    {post.autorFoto ? <img src={post.autorFoto} className="mini-avatar-fb" alt="autor" /> : <FaUserCircle size={40} color="#ccc" className="mini-avatar-fb" />}
                                     <div className="post-user-meta">
                                         <span className="author-fb" style={{color: '#000'}}>{post.autor}</span>
-                                        <span className="time-fb" style={{color: '#65676b'}}>Hace un momento · <FaGlobeAmericas /></span>
+                                        <span className="time-fb" style={{color: '#65676b'}}>Ahora · <FaGlobeAmericas /></span>
                                     </div>
                                     <div className="post-actions-right">
-                                        <button 
-                                            className={`btn-save-post ${guardados[post._id] ? 'active' : ''}`}
-                                            onClick={() => toggleGuardar(post._id)}
-                                        >
+                                        <button className={`btn-save-post ${guardados[post._id] ? 'active' : ''}`} onClick={() => toggleGuardar(post._id)}>
                                             {guardados[post._id] ? <FaBookmark /> : <FaRegBookmark />}
                                         </button>
                                         <button className="btn-fb-options" onClick={(e) => handleToggleMenu(e, post._id)}><FaEllipsisH /></button>
                                     </div>
                                 </div>
-
                                 <div className="post-body-text" style={{color: '#000'}}>{post.contenido}</div>
-
-                                {post.foto && (
-                                    <div className="post-image-main">
-                                        <img src={post.foto} className="img-full-post" alt="post" />
-                                    </div>
-                                )}
-
+                                {post.foto && <div className="post-image-main"><img src={post.foto} className="img-full-post" alt="post" /></div>}
                                 <div className="post-action-buttons-fb">
-                                    <button onClick={() => toggleLike(post._id)} className={likes[post._id] ? "liked" : ""} style={{color: '#65676b'}}>
-                                        <FaThumbsUp /> Me gusta
-                                    </button>
+                                    <button onClick={() => toggleLike(post._id)} className={likes[post._id] ? "liked" : ""} style={{color: '#65676b'}}><FaThumbsUp /> Me gusta</button>
                                     <button style={{color: '#65676b'}}><FaComment /> Comentar</button>
                                     <button style={{color: '#65676b'}}><FaShare /> Compartir</button>
                                 </div>
@@ -339,14 +309,11 @@ const Grupos = () => {
         );
     }
 
-    // --- VISTA LISTA DE GRUPOS ---
     return (
         <section className="grupos-page">
             <div className="grupos-header-top">
                 <div className="header-left-side">
-                    <button className="btn-back-main-page" onClick={() => window.history.back()}>
-                        <FaArrowLeft />
-                    </button>
+                    <button className="btn-back-main-page" onClick={() => window.history.back()}><FaArrowLeft /></button>
                     <h2 className="texto-negro">Comunidades</h2>
                 </div>
                 <button className="btn-crear-grupo" onClick={() => setIsModalOpen(true)}><FaPlus /> Crear Grupo</button>
@@ -356,10 +323,12 @@ const Grupos = () => {
                 <FaSearch className="icon-s" />
                 <input type="text" placeholder="Buscar grupos..." value={filtro} onChange={(e) => setFiltro(e.target.value)} />
             </div>
+
             <div className="tabs-vibe">
                 <button className={pestana === "todos" ? "active" : ""} onClick={() => setPestana("todos")}>Todos los grupos</button>
                 <button className={pestana === "mis-grupos" ? "active" : ""} onClick={() => setPestana("mis-grupos")}>Mis grupos</button>
             </div>
+
             <div className="grupos-grid-moderno">
                 {grupos.filter(g => g.nombre?.toLowerCase().includes(filtro.toLowerCase())).map(grupo => (
                     <div key={grupo._id} className="grupo-card-row">
@@ -367,7 +336,7 @@ const Grupos = () => {
                             <img src={grupo.imagen || "https://via.placeholder.com/150"} className="grupo-img-mini-square" alt={grupo.nombre} />
                             <div className="grupo-textos-info">
                                 <h3 className="grupo-nombre-bold" style={{color: '#000'}}>{grupo.nombre}</h3>
-                                <p className="ultima-visita" style={{color: '#65676b'}}>Tu última visita: hace poco</p>
+                                <p style={{color: '#65676b'}}>{grupo.miembrosArray?.length || 1} miembros</p>
                             </div>
                         </div>
                         <div className="grupo-card-actions-row">
@@ -376,24 +345,17 @@ const Grupos = () => {
                             ) : (
                                 <button className="btn-ver-grupo-vibe-blue" onClick={() => handleUnirseGrupo(grupo)}>Unirse</button>
                             )}
-                            
                             <div className="contenedor-opciones-grupo">
                                 <button className="btn-dots-gray" onClick={(e) => handleToggleMenu(e, grupo._id)}><FaEllipsisH /></button>
                                 {menuAbiertoId === grupo._id && (
                                     <div className="dropdown-fb-style">
-                                        <div className="arrow-up-fb"></div>
-                                        <button className="fb-item"><FaRegFileAlt className="fb-icon" /> Tu contenido</button>
-                                        <button className="fb-item justify"><span><FaShare className="fb-icon" /> Compartir</span><FaChevronRight className="fb-arrow" /></button>
+                                        <button className="fb-item"><FaRegFileAlt className="fb-icon" /> Contenido</button>
+                                        <button className="fb-item"><FaShare className="fb-icon" /> Compartir</button>
                                         {grupo.creadorEmail === userEmail ? (
-                                            <button className="fb-item" onClick={() => handleEliminarGrupo(grupo._id)}>
-                                                <FaTrash className="fb-icon" style={{color: 'red'}} /> Eliminar Grupo
-                                            </button>
+                                            <button className="fb-item" onClick={() => handleEliminarGrupo(grupo._id)}><FaTrash className="fb-icon" style={{color: 'red'}} /> Eliminar</button>
                                         ) : grupo.miembrosArray?.includes(userEmail) ? (
-                                            <button className="fb-item item-danger" onClick={() => handleAbandonarGrupo(grupo._id)}>
-                                                <FaSignOutAlt className="fb-icon" /> Abandonar grupo
-                                            </button>
+                                            <button className="fb-item item-danger" onClick={() => handleAbandonarGrupo(grupo._id)}><FaSignOutAlt className="fb-icon" /> Salir</button>
                                         ) : null}
-                                        <button className="fb-item"><FaBell className="fb-icon" /> Notificaciones</button>
                                     </div>
                                 )}
                             </div>
@@ -402,81 +364,43 @@ const Grupos = () => {
                 ))}
             </div>
 
-            {/* MODAL DE CREACIÓN */}
             {isModalOpen && (
                 <div className="modal-overlay">
                     <div className="vibe-modal-container">
                         <div className="vibe-modal-header">
-                            <button className="vibe-close-circle" onClick={() => setIsModalOpen(false)}>
-                                <FaTimes />
-                            </button>
+                            <button className="vibe-close-circle" onClick={() => setIsModalOpen(false)}><FaTimes /></button>
                             <h3 className="vibe-modal-title-main" style={{color: '#000'}}>Nuevo Grupo</h3>
                         </div>
                         <form onSubmit={handleCrearGrupo}>
                             <div className="vibe-modal-content-body">
                                 <div className="vibe-input-wrapper">
-                                    <input 
-                                        type="text" 
-                                        className="vibe-input-field" 
-                                        placeholder="Nombre de la comunidad" 
-                                        required
-                                        style={{color: '#000'}}
-                                        value={nuevoGrupo.nombre} 
-                                        onChange={(e) => setNuevoGrupo({...nuevoGrupo, nombre: e.target.value})} 
-                                    />
+                                    <input type="text" className="vibe-input-field" placeholder="Nombre de la comunidad" required value={nuevoGrupo.nombre} onChange={(e) => setNuevoGrupo({...nuevoGrupo, nombre: e.target.value})} />
                                 </div>
                                 <div className="vibe-upload-box" onClick={() => fileInputRef.current.click()}>
-                                    {nuevoGrupo.imagen ? (
-                                        <img src={nuevoGrupo.imagen} className="vibe-img-fit" alt="preview" />
-                                    ) : (
-                                        <div className="vibe-upload-placeholder">
-                                            <FaCamera className="vibe-camera-icon" />
-                                            <p style={{color: '#65676b'}}>Subir foto de portada</p>
-                                        </div>
-                                    )}
+                                    {nuevoGrupo.imagen ? <img src={nuevoGrupo.imagen} className="vibe-img-fit" alt="preview" /> : <div className="vibe-upload-placeholder"><FaCamera /><p style={{color: '#65676b'}}>Subir foto</p></div>}
                                 </div>
                                 <input type="file" ref={fileInputRef} style={{display: 'none'}} accept="image/*" onChange={(e) => handleImagePreview(e, 'grupo')} />
                             </div>
                             <div className="vibe-modal-footer">
-                                <button type="submit" className="vibe-btn-primary-full" disabled={loading}>
-                                    {loading ? "Cargando..." : "Crear Comunidad"}
-                                </button>
+                                <button type="submit" className="vibe-btn-primary-full" disabled={loading}>{loading ? "Cargando..." : "Crear Comunidad"}</button>
                             </div>
                         </form>
                     </div>
                 </div>
             )}
 
-            {/* MODAL CROPPER */}
             {imageToCrop && (
                 <div className="modal-overlay cropper-overlay">
                     <div className="vibe-modal-container cropper-modal">
-                        <div className="cropper-header">
-                            <h3 className="vibe-modal-title-main" style={{color: '#000'}}>Ajustar Avatar</h3>
-                        </div>
+                        <div className="cropper-header"><h3 className="vibe-modal-title-main" style={{color: '#000'}}>Ajustar Foto</h3></div>
                         <div className="cropper-body">
                             <div className="crop-area-container">
-                                <Cropper
-                                    image={imageToCrop}
-                                    crop={crop}
-                                    zoom={zoom}
-                                    rotation={rotation}
-                                    aspect={16 / 9}
-                                    onCropChange={setCrop}
-                                    onZoomChange={setZoom}
-                                    onRotationChange={setRotation}
-                                    onCropComplete={onCropComplete}
-                                    showGrid={true}
-                                />
-                            </div>
-                            <div className="cropper-controls-vibe">
-                                <input type="range" min={1} max={3} step={0.1} value={zoom} onChange={(e) => setZoom(parseFloat(e.target.value))} />
-                                <input type="range" min={0} max={360} step={1} value={rotation} onChange={(e) => setRotation(parseInt(e.target.value))} />
+                                <Cropper image={imageToCrop} crop={crop} zoom={zoom} rotation={rotation} aspect={16 / 9} onCropChange={setCrop} onZoomChange={setZoom} onRotationChange={setRotation} onCropComplete={onCropComplete} showGrid={true} />
                             </div>
                         </div>
                         <div className="cropper-footer">
                             <button className="btn-cancel-vibe" onClick={() => setImageToCrop(null)}>Cancelar</button>
-                            <button className="btn-confirm-vibe" onClick={handleConfirmCrop}>Recortar y Guardar</button>
+                            <button className="btn-confirm-vibe" onClick={handleConfirmCrop}>Guardar</button>
                         </div>
                     </div>
                 </div>
