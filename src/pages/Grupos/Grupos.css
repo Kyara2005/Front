@@ -388,7 +388,7 @@
 }
 
 /* =========================================================
-   ESTILOS DEL MURO (POSTS) - CORREGIDO ANCHO Y IMAGEN
+   ESTILOS DEL MURO (POSTS) - CONFIGURACIÓN DE ANCHO MÁXIMO
    ========================================================= */
 
 .fb-layout {
@@ -504,7 +504,7 @@
 .btn-fb-blue { background: #1877f2; color: white; border: none; padding: 8px 15px; border-radius: 6px; font-weight: 600; cursor: pointer; }
 .btn-fb-gray { background: #e4e6eb; color: #050505; border: none; padding: 8px 15px; border-radius: 6px; font-weight: 600; cursor: pointer; }
 
-/* ✅ GRID CENTRADO */
+/* ✅ CUERPO DEL MURO: CENTRADO TOTAL */
 .fb-body-grid {
     display: flex;
     flex-direction: column;
@@ -514,20 +514,20 @@
     width: 100%;
 }
 
-/* ✅ TARJETA ANCHA */
+/* ✅ RECUADRO BLANCO ENSANCHADO (ESTILO FACEBOOK DESKTOP) */
 .fb-card-white {
     background: white;
     border-radius: 8px;
-    padding: 12px 0px; /* IMPORTANTE: 0 a los lados */
+    padding: 12px 0px; /* Mantener 0 lateral para la imagen */
     box-shadow: 0 1px 2px rgba(0,0,0,0.1);
     margin-bottom: 16px;
     width: 100%;
-    max-width: 750px; 
+    max-width: 850px; /* 🔥 Ensanchado a 850px 🔥 */
     box-sizing: border-box;
     overflow: hidden;
 }
 
-/* ✅ MÁRGENES PARA TEXTOS INTERNOS */
+/* ✅ MÁRGENES DE TEXTO PARA QUE NO TOQUEN EL BORDE DEL RECUADRO ANCHO */
 .post-top-header, 
 .post-user-meta, 
 .fb-card-white > p, 
@@ -565,10 +565,10 @@
 .author-fb { font-weight: 600; font-size: 15px; color: #050505; }
 .time-fb { font-size: 13px; color: #65676b; }
 
-/* ✅ IMAGEN FULL WIDTH (MANGA STYLE) */
+/* ✅ IMAGEN QUE OCUPA TODO EL ANCHO DEL RECUADRO */
 .post-image-manga-style {
     position: relative;
-    margin: 12px 0; /* Sin márgenes negativos */
+    margin: 12px 0;
     background: #000;
     width: 100%;
 }
@@ -576,8 +576,9 @@
 .img-full-post {
     width: 100%;
     display: block;
-    max-height: 800px;
-    object-fit: contain; /* Para que el arte del manga se vea completo */
+    height: auto;
+    max-height: 1000px;
+    object-fit: contain;
 }
 
 .manga-badge {
