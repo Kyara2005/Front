@@ -68,8 +68,18 @@ const Login = () => {
                 }
             );
 
-            // AUMENTO: Extraemos 'fotoPerfil' de la respuesta del backend
             const { token, nombre, correoInstitucional, rol, fotoPerfil } = res.data;
+
+            // 🔒 VALIDACIÓN: el rol real debe coincidir con el seleccionado
+            if (rol !== data.rol) {
+                toast.update(loadingToast, {
+                    render: "El rol seleccionado no coincide con tu cuenta",
+                    type: "error",
+                    isLoading: false,
+                    autoClose: 4000
+                });
+                return;
+            }
 
             setToken(token);
             setRol(rol);
@@ -79,8 +89,6 @@ const Login = () => {
             localStorage.setItem("rol", rol);
             localStorage.setItem("nombre", nombre);
             localStorage.setItem("correo", correoInstitucional);
-            
-            // AUMENTO CLAVE: Guardamos la foto para que 'Grupos.jsx' pueda usarla
             localStorage.setItem("fotoPerfil", fotoPerfil || ""); 
 
             toast.update(loadingToast, {
@@ -90,7 +98,16 @@ const Login = () => {
                 autoClose: 1200
             });
 
-            setTimeout(() => navigate("/dashboard"), 900);
+            // 🚀 REDIRECCIÓN SEGÚN ROL
+            setTimeout(() => {
+                if (rol === "estudiante") {
+                    navigate("/dashboard");
+                } else if (rol === "administracion") {
+                    navigate("/dashboard-admin");
+                } else if (rol === "moderador") {
+                    navigate("/dashboard-moderador");
+                }
+            }, 900);
 
         } catch (error) {
             toast.update(loadingToast, {
