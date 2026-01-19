@@ -37,27 +37,24 @@ const Login = () => {
         const loadingToast = toast.loading("Iniciando sesion...");
 
         try {
-            // Se envia el rol en minusculas al backend para coincidir con la BDD
+            // ENVIAR AL BACKEND: La contraseña se envia EXACTAMENTE como se escribe
+            // Solo el rol se normaliza a minusculas para coincidir con la BDD
             const res = await axios.post(
                 `${import.meta.env.VITE_BACKEND_URL}/api/usuarios/login`,
                 {
                     correoInstitucional: data.email,
-                    password: data.password,
+                    password: data.password, // Se queda igual (case-sensitive)
                     rol: data.rol.toLowerCase().trim() 
                 }
             );
 
             const { token, nombre, correoInstitucional, rol, fotoPerfil } = res.data;
 
-            // --- NORMALIZACION PARA VALIDACION ---
-            const seleccionado = data.rol.toLowerCase().trim(); // Lo que eliges en el select
-            const realBD = rol.toLowerCase().trim(); // Lo que devuelve tu BDD
+            // --- VALIDACION DE ROL (Normalizada) ---
+            const seleccionado = data.rol.toLowerCase().trim();
+            const realBD = rol.toLowerCase().trim();
 
-            // Validacion comparando solo minusculas
-            const esMismoRol = seleccionado === realBD;
-            const esAdminPlural = (seleccionado === "administrador" && realBD === "administradores");
-
-            if (!esMismoRol && !esAdminPlural) {
+            if (seleccionado !== realBD && !(seleccionado === "administrador" && realBD === "administradores")) {
                 toast.update(loadingToast, {
                     render: `Acceso denegado: Tu cuenta no es de ${data.rol} 🚫`,
                     type: "error",
@@ -67,7 +64,7 @@ const Login = () => {
                 return; 
             }
 
-            // Guardar sesion si la validacion es exitosa
+            // Guardar sesion
             setToken(token);
             setRol(rol);
             
