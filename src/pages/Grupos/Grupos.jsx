@@ -352,21 +352,22 @@ const Grupos = () => {
                                                 </div>
                                             ))}
                                             
-                                            <form onSubmit={(e) => handleComentar(e, post._id)} className="comment-input-wrapper" style={{ padding: '5px 15px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                <img src={avatar || "https://via.placeholder.com/32"} className="comment-mini-avatar" alt="yo" style={{ width: '32px', height: '32px', borderRadius: '50%' }} />
-                                                <div className="comment-input-container-with-btn" style={{ flex: 1, display: 'flex', alignItems: 'center', backgroundColor: '#f0f2f5', borderRadius: '20px', padding: '0 12px' }}>
-                                                    <input 
-                                                        placeholder="Escribe un comentario..." 
-                                                        className="comment-input-field"
-                                                        style={{ flex: 1, border: 'none', background: 'transparent', padding: '10px 0', outline: 'none', color: '#000' }}
-                                                        value={comentarioTexto[post._id] || ""}
-                                                        onChange={(e) => setComentarioTexto({...comentarioTexto, [post._id]: e.target.value})}
-                                                    />
-                                                    <button type="submit" className="btn-send-comment-icon" disabled={!comentarioTexto[post._id]?.trim()} style={{ background: 'none', border: 'none', color: '#1877f2', cursor: 'pointer', display: 'flex' }}>
-                                                        <FaPaperPlane />
-                                                    </button>
-                                                </div>
-                                            </form>
+                                            <form onSubmit={(e) => handleComentar(e, post._id)} className="comment-input-wrapper" style={{ display: 'flex', gap: '8px', padding: '10px 15px' }}>
+    <img src={avatar || "https://via.placeholder.com/32"} className="comment-mini-avatar" alt="yo" />
+    <div className="comment-input-container-with-btn" style={{ flex: 1, display: 'flex', backgroundColor: '#f0f2f5', borderRadius: '20px', padding: '0 12px' }}>
+        <input 
+            placeholder="Escribe un comentario..." 
+            style={{ flex: 1, border: 'none', background: 'transparent', padding: '8px 0', outline: 'none', color: '#000' }}
+            value={comentarioTexto[post._id] || ""}
+            onChange={(e) => setComentarioTexto({...comentarioTexto, [post._id]: e.target.value})}
+        />
+        {/* Botón tipo submit dentro del form */}
+        <button type="submit" style={{ background: 'none', border: 'none', color: '#1877f2', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+            <FaPaperPlane />
+        </button>
+    </div>
+</form>
+
                                         </div>
                                     )}
                                 </div>
