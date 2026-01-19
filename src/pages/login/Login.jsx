@@ -68,9 +68,11 @@ const Login = () => {
                 }
             );
 
-            const { token, nombre, correoInstitucional, rol, fotoPerfil } = res.data;
+            // ✅ CORRECCIÓN CLAVE: lectura correcta del backend
+            const { token, usuario } = res.data;
+            const { nombre, correoInstitucional, rol, avatar: fotoPerfil } = usuario;
 
-            // 🔒 VALIDACIÓN: el rol real debe coincidir con el seleccionado
+            // 🔒 VALIDACIÓN DE ROL
             if (rol !== data.rol) {
                 toast.update(loadingToast, {
                     render: "El rol seleccionado no coincide con tu cuenta",
