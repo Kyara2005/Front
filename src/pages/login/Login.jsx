@@ -64,27 +64,42 @@ const Login = () => {
                 {
                     correoInstitucional: data.email,
                     password: data.password,
-                    rol: data.rol
+                    rol: data.rol // Se envía el rol seleccionado por el usuario
                 }
             );
 
-            // AUMENTO: Extraemos 'fotoPerfil' de la respuesta del backend
+            // Extraemos los datos reales que vienen de la base de datos
             const { token, nombre, correoInstitucional, rol, fotoPerfil } = res.data;
 
+            // --- VALIDACIÓN ESTRICTA ---
+            // Comparamos el rol seleccionado (data.rol) con el rol real (rol)
+            // También incluimos "administradores" por si acaso tu DB usa el plural
+            const esAdminMatch = (data.rol === "administrador" && (rol === "administrador" || rol === "administradores"));
+            const esEstudianteMatch = (data.rol === "estudiante" && rol === "estudiante");
+            const esModeradorMatch = (data.rol === "moderador" && rol === "moderador");
+
+            if (!esAdminMatch && !esEstudianteMatch && !esModeradorMatch) {
+                toast.update(loadingToast, {
+                    render: `Acceso denegado: Tu cuenta no tiene permisos de ${data.rol} 🚫`,
+                    type: "error",
+                    isLoading: false,
+                    autoClose: 4000
+                });
+                return; // Cortamos la ejecución, no se guarda sesión
+            }
+
+            // Si la validación pasa, guardamos la sesión
             setToken(token);
             setRol(rol);
             
-            // GUARDADO EN LOCALSTORAGE
             localStorage.setItem("token", token);
             localStorage.setItem("rol", rol);
             localStorage.setItem("nombre", nombre);
             localStorage.setItem("correo", correoInstitucional);
-            
-            // AUMENTO CLAVE: Guardamos la foto para que 'Grupos.jsx' pueda usarla
             localStorage.setItem("fotoPerfil", fotoPerfil || ""); 
 
             toast.update(loadingToast, {
-                render: "¡Bienvenido!",
+                render: `¡Bienvenido ${nombre}!`,
                 type: "success",
                 isLoading: false,
                 autoClose: 1200
@@ -94,7 +109,7 @@ const Login = () => {
 
         } catch (error) {
             toast.update(loadingToast, {
-                render: error.response?.data?.msg || "Ocurrió un error 😞",
+                render: error.response?.data?.msg || "Error en el inicio de sesión 😞",
                 type: "error",
                 isLoading: false,
                 autoClose: 4000
@@ -150,7 +165,7 @@ const Login = () => {
                         <div className="input-group">
                             <select {...register("rol", { required: "Selecciona un rol" })} className="select-rol">
                                 <option value="">Seleccionar rol...</option>
-                                <option value="administracion">Administración</option>
+                                <option value="administrador">Administrador</option>
                                 <option value="estudiante">Estudiante</option>
                                 <option value="moderador">Moderador</option>
                             </select>
