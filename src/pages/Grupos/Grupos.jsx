@@ -176,7 +176,7 @@ const Grupos = () => {
         finally { setLoading(false); }
     };
 
-    // --- 6. PUBLICACIONES Y COMENTARIOS (AUMENTADO) ---
+    // --- 6. PUBLICACIONES Y COMENTARIOS (CORREGIDO) ---
     const handlePublicar = async (e) => {
         e.preventDefault();
         if (!nuevoPost.trim() && !fotoPost) return;
@@ -220,12 +220,14 @@ const Grupos = () => {
 
             if (res.ok) {
                 const nuevoComentario = await res.json();
-                setGrupos(prev => prev.map(g => {
+                setGrupos(prevGrupos => prevGrupos.map(g => {
                     if (g._id === grupoActivo._id) {
                         return {
                             ...g,
                             posts: g.posts.map(p => 
-                                p._id === postId ? { ...p, comentarios: [...(p.comentarios || []), nuevoComentario] } : p
+                                p._id === postId 
+                                ? { ...p, comentarios: [...(p.comentarios || []), nuevoComentario] } 
+                                : p
                             )
                         };
                     }
@@ -234,7 +236,7 @@ const Grupos = () => {
                 setComentarioTexto(prev => ({ ...prev, [postId]: "" }));
             }
         } catch (error) {
-            console.error("Error al comentar:", error);
+            console.error("Error al enviar comentario:", error);
         }
     };
 
@@ -266,7 +268,7 @@ const Grupos = () => {
                     </div>
                     <div className="fb-profile-nav">
                         <div className="fb-avatar-section">
-                            <div className="fb-avatar-wrapper" style={{ width: '168px', height: '168px', minWidth: '168px', minHeight: '168px', borderRadius: '50%', border: '4px solid white', overflow: 'hidden', backgroundColor: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, position: 'relative' }}>
+                            <div className="fb-avatar-wrapper" style={{ width: '168px', height: '168px', borderRadius: '50%', border: '4px solid white', overflow: 'hidden', backgroundColor: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
                                 <img src={grupoData.imagen || "https://via.placeholder.com/150"} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                             </div>
                             <div className="fb-name-stats">
@@ -331,39 +333,36 @@ const Grupos = () => {
                                         <button onClick={() => toggleLike(post._id)} className={likes[post._id] ? "liked" : ""} style={{color: '#65676b'}}>
                                             <FaThumbsUp /> Me gusta
                                         </button>
-                                        
                                         <button onClick={() => toggleComentarios(post._id)} style={{color: '#65676b'}}>
                                             <FaComment /> Comentar
                                         </button>
-                                        
                                         <button style={{color: '#65676b'}}><FaShare /> Compartir</button>
                                     </div>
 
-                                    {/* SECCIÓN DE COMENTARIOS CON DESPLIEGUE Y BOTÓN DE ENVIAR A LA DERECHA */}
+                                    {/* SECCIÓN DE COMENTARIOS AUMENTADA */}
                                     {estaAbierto && (
-                                        <div className="fb-comments-section">
+                                        <div className="fb-comments-section" style={{ borderTop: '1px solid #eee', padding: '10px 0' }}>
                                             {post.comentarios?.map((com, index) => (
-                                                <div key={index} className="comment-item">
-                                                    <img src={com.autorFoto || "https://via.placeholder.com/32"} alt="avatar" className="comment-mini-avatar" />
-                                                    <div className="comment-bubble">
-                                                        <span className="comment-author-name">{com.autor}</span>
-                                                        <span className="comment-text">{com.contenido}</span>
+                                                <div key={index} className="comment-item" style={{ padding: '5px 15px', display: 'flex', gap: '8px', marginBottom: '8px' }}>
+                                                    <img src={com.autorFoto || "https://via.placeholder.com/32"} alt="avatar" className="comment-mini-avatar" style={{ width: '32px', height: '32px', borderRadius: '50%' }} />
+                                                    <div className="comment-bubble" style={{ backgroundColor: '#f0f2f5', padding: '8px 12px', borderRadius: '18px' }}>
+                                                        <div className="comment-author-name" style={{ fontWeight: 'bold', fontSize: '13px', color: '#000' }}>{com.autor}</div>
+                                                        <div className="comment-text" style={{ fontSize: '13px', color: '#000' }}>{com.contenido}</div>
                                                     </div>
                                                 </div>
                                             ))}
                                             
-                                            <form onSubmit={(e) => handleComentar(e, post._id)} className="comment-input-wrapper">
-                                                <div className="avatar-circle-wrapper">
-                                                    {avatar ? <img src={avatar} className="comment-mini-avatar" alt="yo" /> : <FaUserCircle size={32} color="#ccc" />}
-                                                </div>
-                                                <div className="comment-input-container-with-btn">
+                                            <form onSubmit={(e) => handleComentar(e, post._id)} className="comment-input-wrapper" style={{ padding: '5px 15px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                <img src={avatar || "https://via.placeholder.com/32"} className="comment-mini-avatar" alt="yo" style={{ width: '32px', height: '32px', borderRadius: '50%' }} />
+                                                <div className="comment-input-container-with-btn" style={{ flex: 1, display: 'flex', alignItems: 'center', backgroundColor: '#f0f2f5', borderRadius: '20px', padding: '0 12px' }}>
                                                     <input 
                                                         placeholder="Escribe un comentario..." 
                                                         className="comment-input-field"
+                                                        style={{ flex: 1, border: 'none', background: 'transparent', padding: '10px 0', outline: 'none', color: '#000' }}
                                                         value={comentarioTexto[post._id] || ""}
                                                         onChange={(e) => setComentarioTexto({...comentarioTexto, [post._id]: e.target.value})}
                                                     />
-                                                    <button type="submit" className="btn-send-comment-icon" disabled={!comentarioTexto[post._id]?.trim()}>
+                                                    <button type="submit" className="btn-send-comment-icon" disabled={!comentarioTexto[post._id]?.trim()} style={{ background: 'none', border: 'none', color: '#1877f2', cursor: 'pointer', display: 'flex' }}>
                                                         <FaPaperPlane />
                                                     </button>
                                                 </div>
@@ -449,7 +448,6 @@ const Grupos = () => {
                 })}
             </div>
 
-            {/* --- MODAL CREAR --- */}
             {isModalOpen && (
                 <div className="modal-overlay">
                     <div className="vibe-modal-container">
@@ -473,7 +471,6 @@ const Grupos = () => {
                 </div>
             )}
 
-            {/* --- MODAL CROPPER --- */}
             {imageToCrop && (
                 <div className="modal-overlay cropper-overlay">
                     <div className="vibe-modal-container cropper-modal">
