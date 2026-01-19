@@ -514,7 +514,7 @@
     display: flex;
     flex-direction: column;
     align-items: center; 
-    gap: 16px;
+    gap: 0px; /* Eliminamos el gap del flex para controlar el espacio con márgenes */
     padding: 16px; 
     width: 100%;
     box-sizing: border-box; 
@@ -525,10 +525,10 @@
     border-radius: 8px;
     padding: 12px 0px; 
     box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-    margin-bottom: 16px;
     width: 100%; 
-    max-width: 900px; 
-    box-sizing: border-box; /* Esto evita que se salga del contenedor */
+    max-width: 900px; /* Igual al ancho de la foto de portada */
+    margin: 0 auto 16px auto; /* Centrado horizontal */
+    box-sizing: border-box;
     overflow: hidden;
 }
 
@@ -561,7 +561,13 @@
 
 .mini-avatar-fb { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
 
-.publish-input-row { display: flex; align-items: center; gap: 10px; }
+.publish-input-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px 24px; /* Un poco más de aire interno */
+}
+
 .publish-input-row input {
     flex: 1;
     background: #f0f2f5;
@@ -583,8 +589,8 @@
 
 .publish-area {
     width: 100%;
-    max-width: 900px;
-    min-width: 95%;
+    max-width: 900px; /* Igual al ancho de la foto de portada */
+    margin: 0 auto 10px auto; /* Reducimos el margen de abajo a 10px */
 }
 
 
