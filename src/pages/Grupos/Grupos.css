@@ -695,6 +695,7 @@
     position: absolute;
     top: 45px;
     right: 0;
+    color: #050505 !important;
     background: white;
     width: 280px;
     border-radius: 8px;
