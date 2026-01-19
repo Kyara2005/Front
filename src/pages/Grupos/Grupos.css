@@ -147,6 +147,7 @@
     background: #f8f9fa; 
     outline: none;
     color: #1c1e21;
+   box-sizing: border-box;
 }
 
 .vibe-upload-box {
@@ -410,7 +411,7 @@
     background-size: cover;
     background-position: center;
     position: relative;
-    max-width: 1100px;
+    max-width: 900px;
     margin: 0 auto;
     border-bottom-left-radius: 8px;
     border-bottom-right-radius: 8px;
@@ -442,7 +443,7 @@
 }
 
 .fb-profile-nav {
-    max-width: 1050px;
+    max-width: 900px;
     margin: 0 auto;
     padding: 0 16px;
 }
@@ -569,6 +570,7 @@
     border-radius: 20px;
     outline: none;
     color: #000;
+   box-sizing: border-box;
 }
 
 .publish-footer-fb {
@@ -581,7 +583,7 @@
 
 .publish-area {
     width: 100%;
-    max-width: 1000px;
+    max-width: 900px;
     min-width: 95%;
 }
 
