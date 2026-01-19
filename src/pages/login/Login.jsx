@@ -37,7 +37,7 @@ const Login = () => {
         const loadingToast = toast.loading("Iniciando sesion...");
 
         try {
-            // Se envia el rol en minusculas al backend
+            // Se envia el rol en minusculas al backend para coincidir con la BDD
             const res = await axios.post(
                 `${import.meta.env.VITE_BACKEND_URL}/api/usuarios/login`,
                 {
@@ -49,12 +49,12 @@ const Login = () => {
 
             const { token, nombre, correoInstitucional, rol, fotoPerfil } = res.data;
 
-            // --- VALIDACION SIN ACENTOS NI MAYUSCULAS ---
-            const seleccionado = data.rol.toLowerCase().trim();
-            const realBD = rol.toLowerCase().trim();
+            // --- NORMALIZACION PARA VALIDACION ---
+            const seleccionado = data.rol.toLowerCase().trim(); // Lo que eliges en el select
+            const realBD = rol.toLowerCase().trim(); // Lo que devuelve tu BDD
 
+            // Validacion comparando solo minusculas
             const esMismoRol = seleccionado === realBD;
-            // Soporte para plural en administrador
             const esAdminPlural = (seleccionado === "administrador" && realBD === "administradores");
 
             if (!esMismoRol && !esAdminPlural) {
@@ -67,7 +67,7 @@ const Login = () => {
                 return; 
             }
 
-            // Guardar sesion
+            // Guardar sesion si la validacion es exitosa
             setToken(token);
             setRol(rol);
             
