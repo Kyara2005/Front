@@ -610,6 +610,7 @@
 .fb-header-container, 
 .publish-area, 
 .fb-card-white {
+    background-color: #f0f2f5 !important;
     width: 100% !important;
     max-width: 820px !important; /* Forzamos el mismo ancho para ambos */
     margin-left: auto !important;
