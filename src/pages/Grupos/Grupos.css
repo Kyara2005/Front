@@ -605,10 +605,14 @@
 .fb-header-container, 
 .publish-area, 
 .fb-card-white {
-    width: 100% !important;
-    max-width: 800px !important; /* Ajusta este valor si quieres más ancho */
-    margin: 0 auto 16px auto !important; /* Centra y da espacio abajo */
-    box-sizing: border-box !important;
+    max-width: 900px !important;
+    width: auto !important;
+    
+    /* 🔥 Mismos valores para que todo cuadre en línea recta 🔥 */
+    margin-left: 45px !important;
+    margin-right: 60px !important;
+    
+    margin-bottom: 16px !important; /* Espacio entre cuadros */
 }
 
 .publish-area {
