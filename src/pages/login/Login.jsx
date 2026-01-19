@@ -60,16 +60,15 @@ const Login = () => {
 
         try {
             const res = await axios.post(
-                `${import.meta.env.VITE_BACKEND_URL}/api/usuarios/login`,
-                {
-                    correoInstitucional: data.email,
-                    password: data.password,
-                    rol: data.rol
-                }
-            );
-            console.log("RESPUESTA LOGIN:", res.data);
+    `${import.meta.env.VITE_BACKEND_URL}/api/usuarios/login`,
+    {
+        correoInstitucional: data.email,
+        password: data.password,
+        rol: data.rol
+    }
+);
 
-            const { token, nombre, correoInstitucional, rol, fotoPerfil } = res.data;
+console.log("RESPUESTA LOGIN:", res.data);
 
     if (rol !== "estudiante") {
         toast.update(loadingToast, {
