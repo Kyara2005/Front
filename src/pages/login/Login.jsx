@@ -56,13 +56,6 @@ const Login = () => {
     const [showPassword, setShowPassword] = useState(false);
 
     const handleLogin = async (data) => {
-        // 🔒 SOLO PERMITIR ESTUDIANTE
-    if (data.rol !== "estudiante") {
-        toast.error("Solo los estudiantes pueden iniciar sesión 🚫", {
-            autoClose: 3000
-        });
-        return;
-    }
         const loadingToast = toast.loading("Iniciando sesión...");
 
         try {
@@ -74,13 +67,18 @@ const Login = () => {
                     rol: data.rol
                 }
             );
-
-            // AUMENTO: Extraemos 'fotoPerfil' de la respuesta del backend
             const { token, nombre, correoInstitucional, rol, fotoPerfil } = res.data;
 
-            setToken(token);
-            setRol(rol);
-            
+    if (rol !== "estudiante") {
+        toast.update(loadingToast, {
+            render: "Acceso denegado. Solo estudiantes pueden ingresar 🚫",
+            type: "error",
+            isLoading: false,
+            autoClose: 3500
+        });
+        return;
+    }
+
             // GUARDADO EN LOCALSTORAGE
             localStorage.setItem("token", token);
             localStorage.setItem("rol", rol);
