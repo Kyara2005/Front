@@ -602,23 +602,24 @@
     border-top: 1px solid #e4e6eb;
 }
 
+/* Aplicamos el mismo ancho a los tres elementos principales */
 .fb-header-container, 
 .publish-area, 
 .fb-card-white {
     width: 95% !important;
-    max-width: 900px !important;
-    
-    /* 🔥 Centrado idéntico al header 🔥 */
+    max-width: 850px !important; /* Ajusta este número al tamaño que desees, pero que sea igual para todos */
     margin-left: auto !important;
     margin-right: auto !important;
-    
-    box-sizing: border-box;
+    box-sizing: border-box !important;
 }
 
+/* Ajuste extra para que el área de publicación no tenga sombras o bordes que lo ensanchen */
 .publish-area {
-    width: 100%;
-    max-width: 900px;    /* Mismo ancho que la foto de portada */
-    margin: 0 auto 16px auto; /* 16px de separación con lo de abajo */
+    border: none !important;
+    padding: 0 !important;
+    background: white;
+    border-radius: 8px;
+    margin-top: 16px !important;
 }
 
 
