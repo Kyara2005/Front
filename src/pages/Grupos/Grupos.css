@@ -3,11 +3,12 @@
    ========================================================= */
 .grupos-page {
     padding: 20px;
-    max-width: 1200px;
-    margin: 0 auto;
+    width: 100%; /* Cambiado de max-width a 100% */
+    margin: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #E1BEE7; 
     min-height: 100vh;
+    box-sizing: border-box;
 }
 
 .grupos-header-top {
@@ -397,8 +398,11 @@
    ========================================================= */
 
 .fb-layout {
-    background-color: #E1BEE7;
+    background-color: #E1BEE7 !important; /* Lila suave en todo el fondo */
     min-height: 100vh;
+    width: 100%;
+    margin: 0;
+    padding: 0;
 }
 
 .fb-header-container {
@@ -736,12 +740,13 @@
     object-fit: cover;
 }
 
+.fb-body-grid, 
 body-grupos, 
-.fb-body-grid,
 .main-wrapper { 
-    background-color: #f0f2f5 !important; /* Gris claro profesional */
-    background-image: none !important;    /* Borra cualquier degradado */
-    padding-right: 0 !important;          /* Evita que aparezca la línea lateral */
+    background-color: #E1BEE7 !important; /* Cambiado de gris claro a lila suave */
+    background-image: none !important;    
+    padding-right: 0 !important;
+    width: 100%;
 }
 
 @keyframes fadeIn {
