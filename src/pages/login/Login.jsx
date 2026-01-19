@@ -67,6 +67,8 @@ const Login = () => {
                     rol: data.rol
                 }
             );
+            console.log("RESPUESTA LOGIN:", res.data);
+
             const { token, nombre, correoInstitucional, rol, fotoPerfil } = res.data;
 
     if (rol !== "estudiante") {
