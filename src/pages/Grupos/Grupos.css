@@ -737,12 +737,25 @@
     object-fit: cover;
 }
 
-body-grupos, 
-.fb-body-grid,
-.main-wrapper { 
-    background-color: #f0f2f5 !important; /* Gris claro profesional */
-    background-image: none !important;    /* Borra cualquier degradado */
-    padding-right: 0 !important;          /* Evita que aparezca la línea lateral */
+/* =========================================================
+   FONDO LILA SOLO PARA SECCIONES DE GRUPOS
+   ========================================================= */
+
+/* Aplicamos el fondo lila solo si el elemento tiene estas clases */
+.grupos-page, 
+.fb-layout, 
+.fb-body-grid {
+    background-color: #f0f2f5 !important; /* El color gris claro que pediste al inicio */
+    background-image: none !important;
+    min-height: 100vh;
+    margin: 0;
+    display: block; /* Asegura que ocupe el espacio */
+}
+
+/* Si quieres que sea EXACTAMENTE el lila del dashboard pero solo aquí: */
+.grupos-page, 
+.fb-body-grid {
+    background-color: #D1C4E9 !important; 
 }
 
 @keyframes fadeIn {
