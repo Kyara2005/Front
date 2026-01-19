@@ -50,6 +50,7 @@ const KawaiiEyeOffIcon = () => (
 const Login = () => {
     const navigate = useNavigate();
     const { register, handleSubmit, formState: { errors } } = useForm();
+
     const setToken = storeAuth((state) => state.setToken);
     const setRol = storeAuth((state) => state.setRol);
 
@@ -60,34 +61,47 @@ const Login = () => {
 
         try {
             const res = await axios.post(
-    `${import.meta.env.VITE_BACKEND_URL}/api/usuarios/login`,
-    {
-        correoInstitucional: data.email,
-        password: data.password,
-        rol: data.rol
-    }
-);
+                `${import.meta.env.VITE_BACKEND_URL}/api/usuarios/login`,
+                {
+                    correoInstitucional: data.email,
+                    password: data.password,
+                    rol: data.rol
+                }
+            );
 
-console.log("RESPUESTA LOGIN:", res.data);
+            // SOLO lo que el backend envía realmente
+            const { token, nombre, correoInstitucional } = res.data;
 
-    if (rol !== "estudiante") {
-        toast.update(loadingToast, {
-            render: "Acceso denegado. Solo estudiantes pueden ingresar 🚫",
-            type: "error",
-            isLoading: false,
-            autoClose: 3500
-        });
-        return;
-    }
+            // 🔒 Validar token
+            if (!token) {
+                toast.update(loadingToast, {
+                    render: "Error de autenticación",
+                    type: "error",
+                    isLoading: false,
+                    autoClose: 3500
+                });
+                return;
+            }
 
-            // GUARDADO EN LOCALSTORAGE
+            // 🔒 Solo permitir estudiante
+            if (data.rol !== "estudiante") {
+                toast.update(loadingToast, {
+                    render: "Acceso denegado. Solo estudiantes pueden ingresar 🚫",
+                    type: "error",
+                    isLoading: false,
+                    autoClose: 3500
+                });
+                return;
+            }
+
+            // Guardado de sesión
+            setToken(token);
+            setRol(data.rol);
+
             localStorage.setItem("token", token);
-            localStorage.setItem("rol", rol);
+            localStorage.setItem("rol", data.rol);
             localStorage.setItem("nombre", nombre);
             localStorage.setItem("correo", correoInstitucional);
-            
-            // AUMENTO CLAVE: Guardamos la foto para que 'Grupos.jsx' pueda usarla
-            localStorage.setItem("fotoPerfil", fotoPerfil || ""); 
 
             toast.update(loadingToast, {
                 render: "¡Bienvenido!",
@@ -128,7 +142,9 @@ console.log("RESPUESTA LOGIN:", res.data);
                                 placeholder="Email universitario"
                                 {...register("email", { required: "El email es obligatorio" })}
                             />
-                            {errors.email && <span className="error-text">{errors.email.message}</span>}
+                            {errors.email && (
+                                <span className="error-text">{errors.email.message}</span>
+                            )}
                         </div>
 
                         <div className="input-group password-group" style={{ position: "relative" }}>
@@ -150,20 +166,29 @@ console.log("RESPUESTA LOGIN:", res.data);
                             >
                                 {showPassword ? <KawaiiEyeIcon /> : <KawaiiEyeOffIcon />}
                             </span>
-                            {errors.password && <span className="error-text">{errors.password.message}</span>}
+                            {errors.password && (
+                                <span className="error-text">{errors.password.message}</span>
+                            )}
                         </div>
 
                         <div className="input-group">
-                            <select {...register("rol", { required: "Selecciona un rol" })} className="select-rol">
+                            <select
+                                {...register("rol", { required: "Selecciona un rol" })}
+                                className="select-rol"
+                            >
                                 <option value="">Seleccionar rol...</option>
                                 <option value="administracion">Administración</option>
                                 <option value="estudiante">Estudiante</option>
                                 <option value="moderador">Moderador</option>
                             </select>
-                            {errors.rol && <span className="error-text">{errors.rol.message}</span>}
+                            {errors.rol && (
+                                <span className="error-text">{errors.rol.message}</span>
+                            )}
                         </div>
 
-                        <button type="submit" className="login-btn">Iniciar Sesión</button>
+                        <button type="submit" className="login-btn">
+                            Iniciar Sesión
+                        </button>
 
                         <Link to="/Forgot-password" className="Forgot-link">
                             ¿Olvidaste tu contraseña?
