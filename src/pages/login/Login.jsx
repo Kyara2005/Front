@@ -11,37 +11,15 @@ import "./Login.css";
 
 // --- SVG OJITOS KAWAII ---
 const KawaiiEyeIcon = () => (
-    <svg 
-        xmlns="http://www.w3.org/2000/svg" 
-        width="22" 
-        height="22" 
-        viewBox="0 0 24 24" 
-        fill="none" 
-        stroke="currentColor" 
-        strokeWidth="2.5" 
-        strokeLinecap="round" 
-        strokeLinejoin="round"
-        className="icon-eye-kawaii"
-    >
-        <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z" />
+    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="icon-eye-kawaii">
+        <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7" />
         <circle cx="12" cy="12" r="3.5" fill="currentColor"/>
         <circle cx="13.5" cy="10.5" r="0.5" fill="white"/>
     </svg>
 );
 
 const KawaiiEyeOffIcon = () => (
-    <svg 
-        xmlns="http://www.w3.org/2000/svg" 
-        width="22" 
-        height="22" 
-        viewBox="0 0 24 24" 
-        fill="none" 
-        stroke="currentColor" 
-        strokeWidth="2.5" 
-        strokeLinecap="round" 
-        strokeLinejoin="round"
-        className="icon-eye-off-kawaii"
-    >
+    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="icon-eye-off-kawaii">
         <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.49M2 2l20 20" />
         <path d="M21.94 12c-3.1-4.81-6.57-7.25-9.44-8a18.45 18.45 0 0 0-3.04.57" />
     </svg>
@@ -64,31 +42,31 @@ const Login = () => {
                 {
                     correoInstitucional: data.email,
                     password: data.password,
-                    rol: data.rol // Se envía el rol seleccionado por el usuario
+                    rol: data.rol 
                 }
             );
 
-            // Extraemos los datos reales que vienen de la base de datos
             const { token, nombre, correoInstitucional, rol, fotoPerfil } = res.data;
 
-            // --- VALIDACIÓN ESTRICTA ---
-            // Comparamos el rol seleccionado (data.rol) con el rol real (rol)
-            // También incluimos "administradores" por si acaso tu DB usa el plural
-            const esAdminMatch = (data.rol === "administrador" && (rol === "administrador" || rol === "administradores"));
-            const esEstudianteMatch = (data.rol === "estudiante" && rol === "estudiante");
-            const esModeradorMatch = (data.rol === "moderador" && rol === "moderador");
+            // --- VALIDACIÓN DINÁMICA (Ignora Mayúsculas/Minúsculas) ---
+            const seleccionado = data.rol.toLowerCase();
+            const realEnBD = rol.toLowerCase();
 
-            if (!esAdminMatch && !esEstudianteMatch && !esModeradorMatch) {
+            // Verificamos si coinciden o si es el caso especial de admin/administradores
+            const esMismoRol = seleccionado === realEnBD;
+            const esAdminPlural = (seleccionado === "administrador" && realEnBD === "administradores");
+
+            if (!esMismoRol && !esAdminPlural) {
                 toast.update(loadingToast, {
                     render: `Acceso denegado: Tu cuenta no tiene permisos de ${data.rol} 🚫`,
                     type: "error",
                     isLoading: false,
                     autoClose: 4000
                 });
-                return; // Cortamos la ejecución, no se guarda sesión
+                return;
             }
 
-            // Si la validación pasa, guardamos la sesión
+            // GUARDADO DE SESIÓN
             setToken(token);
             setRol(rol);
             
@@ -109,7 +87,7 @@ const Login = () => {
 
         } catch (error) {
             toast.update(loadingToast, {
-                render: error.response?.data?.msg || "Error en el inicio de sesión 😞",
+                render: error.response?.data?.msg || "Credenciales incorrectas 😞",
                 type: "error",
                 isLoading: false,
                 autoClose: 4000
@@ -126,9 +104,7 @@ const Login = () => {
 
                 <div className="login-card">
                     <h2 className="login-title">Inicio de Sesión</h2>
-                    <p className="login-subtitle">
-                        Ingresa tus datos para acceder a tu cuenta.
-                    </p>
+                    <p className="login-subtitle">Ingresa tus datos para acceder.</p>
 
                     <form className="login-form" onSubmit={handleSubmit(handleLogin)}>
                         <div className="input-group">
@@ -149,13 +125,7 @@ const Login = () => {
                             <span
                                 className="eye-icon"
                                 onClick={() => setShowPassword(!showPassword)}
-                                style={{
-                                    position: "absolute",
-                                    right: "10px",
-                                    top: "50%",
-                                    transform: "translateY(-50%)",
-                                    cursor: "pointer"
-                                }}
+                                style={{ position: "absolute", right: "10px", top: "50%", transform: "translateY(-50%)", cursor: "pointer" }}
                             >
                                 {showPassword ? <KawaiiEyeIcon /> : <KawaiiEyeOffIcon />}
                             </span>
@@ -173,18 +143,12 @@ const Login = () => {
                         </div>
 
                         <button type="submit" className="login-btn">Iniciar Sesión</button>
-
-                        <Link to="/Forgot-password" className="Forgot-link">
-                            ¿Olvidaste tu contraseña?
-                        </Link>
+                        <Link to="/Forgot-password" className="Forgot-link">¿Olvidaste tu contraseña?</Link>
                     </form>
 
-                    <Link to="/register" className="register-link">
-                        ¿No tienes cuenta? Regístrate aquí
-                    </Link>
+                    <Link to="/register" className="register-link">¿No tienes cuenta? Regístrate aquí</Link>
                 </div>
             </div>
-
             <ToastContainer position="top-right" autoClose={4000} />
         </>
     );
