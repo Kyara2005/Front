@@ -411,8 +411,8 @@
     background-size: cover;
     background-position: center;
     position: relative;
-    max-width: 900px;
-    margin: 0 auto;
+    max-width: 900px !important;
+    margin: 0 auto !important;
     border-bottom-left-radius: 8px;
     border-bottom-right-radius: 8px;
 }
