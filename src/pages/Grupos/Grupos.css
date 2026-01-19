@@ -6,7 +6,7 @@
     max-width: 1200px;
     margin: 0 auto;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #E1BEE7; 
+    background-color: #f0f2f5; 
     min-height: 100vh;
 }
 
@@ -397,7 +397,7 @@
    ========================================================= */
 
 .fb-layout {
-    background-color: #E1BEE7;
+    background-color: #f0f2f5;
     min-height: 100vh;
 }
 
