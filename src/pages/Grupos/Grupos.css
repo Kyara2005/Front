@@ -526,7 +526,7 @@
 .fb-card-white {
     background: white;
     border-radius: 8px;
-    padding: 12px 0px; 
+    padding: 0 !important;
     box-shadow: 0 1px 2px rgba(0,0,0,0.1);
     width: 100%; 
     max-width: 900px;    /* Mismo ancho que la foto de portada */
@@ -599,13 +599,15 @@
     border-top: 1px solid #e4e6eb;
 }
 
+/* --- UNIFICACIÓN TOTAL: CABECERA, INPUT Y POSTS --- */
 .fb-header-container, 
 .publish-area, 
 .fb-card-white {
     width: 100% !important;
-    max-width: 800px !important; /* Ajusta este valor si quieres más ancho */
-    margin: 0 auto 16px auto !important; /* Centra y da espacio abajo */
-    box-sizing: border-box !important;
+    max-width: 800px !important; /* El ancho exacto para todos */
+    margin-left: auto !important;
+    margin-right: auto !important;
+    box-sizing: border-box !important; /* Evita que el padding los descuadre */
 }
 
 .publish-area {
