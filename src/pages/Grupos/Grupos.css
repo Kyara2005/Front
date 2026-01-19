@@ -510,26 +510,25 @@
 .btn-fb-gray { background: #e4e6eb; color: #050505; border: none; padding: 8px 15px; border-radius: 6px; font-weight: 600; cursor: pointer; }
 
 /* ✅ MURO CENTRADO */
-.fb-body-grid {
-    display: flex;
-    flex-direction: column;
-    align-items: center; 
-    gap: 0px; /* Eliminamos el gap del flex para controlar el espacio con márgenes */
-    padding: 16px; 
-    width: 100%;
-    box-sizing: border-box; 
-}
-/* ✅ RECUADRO BLANCO MÁS ANCHO QUE ANTES (980px) */
 .fb-card-white {
     background: white;
     border-radius: 8px;
     padding: 12px 0px; 
     box-shadow: 0 1px 2px rgba(0,0,0,0.1);
     width: 100%; 
-    max-width: 900px; /* Igual al ancho de la foto de portada */
-    margin: 0 auto 16px auto; /* Centrado horizontal */
+    max-width: 900px;    /* Mismo ancho que la foto de portada */
+    margin: 0 auto 16px auto; /* Espacio entre cada publicación */
     box-sizing: border-box;
     overflow: hidden;
+}
+
+/* --- CONTENEDOR PADRE DEL MURO --- */
+.fb-body-grid {
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
+    padding: 20px 16px;  /* Espacio superior para que no pegue con el header */
+    width: 100%;
 }
 
 /* margen */
@@ -589,8 +588,8 @@
 
 .publish-area {
     width: 100%;
-    max-width: 900px; /* Igual al ancho de la foto de portada */
-    margin: 0 auto 10px auto; /* Reducimos el margen de abajo a 10px */
+    max-width: 900px;    /* Mismo ancho que la foto de portada */
+    margin: 0 auto 16px auto; /* 16px de separación con lo de abajo */
 }
 
 
