@@ -353,24 +353,31 @@ const Grupos = () => {
                     return pestana === "mis-grupos" ? (match && g.miembrosArray?.includes(userEmail)) : match;
                 })
                 .map(grupo => {
-                    const esCreador = grupo.creadorEmail === userEmail;
-                    const esMiembro = grupo.miembrosArray?.includes(userEmail);
+    const esCreador = grupo.creadorEmail === userEmail;
+    const esMiembro = grupo.miembrosArray?.includes(userEmail);
 
-                    return (
-                        <div key={grupo._id} className="grupo-card-row">
-                            <div className="grupo-card-top-content" onClick={() => entrarAGrupo(grupo)}>
-                                <img src={grupo.imagen || "https://via.placeholder.com/150"} className="grupo-img-mini-square" alt={grupo.nombre} />
-                                <div className="grupo-textos-info">
-                                    <h3 className="grupo-nombre-bold" style={{color: '#000'}}>{grupo.nombre}</h3>
-                                    <p style={{color: '#65676b'}}>{grupo.miembrosArray?.length || 1} miembros</p>
-                                </div>
-                            </div>
-                            <div className="grupo-card-actions-row">
-                                {!esMiembro ? (
-                                    <button className="btn-ver-grupo-vibe-blue" onClick={() => handleUnirseGrupo(grupo)}>Unirse</button>
-                                ) : (
-                                    <button className="btn-ver-grupo-vibe-blue" onClick={() => entrarAGrupo(grupo)}>Ver</button>
-                                )}
+    // Validación flexible para "administrador" o "administradores"
+    const esAdminGlobal = userRole === "administrador" || userRole === "administradores"; 
+
+    return (
+        <div key={grupo._id} className="grupo-card-row">
+            {/* ... resto del código ... */}
+            
+            {menuAbiertoId === grupo._id && (
+                <div className="dropdown-fb-style" style={{ display: 'block' }}>
+                    {/* El botón de eliminar aparecerá para ambos casos */}
+                    {(esCreador || esAdminGlobal) ? (
+                        <button onClick={() => handleEliminarGrupo(grupo._id)} style={{color: 'red'}}>
+                            <FaTrash /> Eliminar Grupo {esAdminGlobal && "(Admin)"}
+                        </button>
+                    ) : (
+                        /* ... lógica de abandonar o unirse ... */
+                    )}
+                </div>
+            )}
+        </div>
+    );
+})
                                 
                                 <div style={{ position: 'relative' }}>
                                     <button className="btn-dots-gray" onClick={() => setMenuAbiertoId(menuAbiertoId === grupo._id ? null : grupo._id)}>
