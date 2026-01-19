@@ -4,7 +4,7 @@ import axios from 'axios';
 import { 
     FaPlus, FaArrowLeft, FaCamera, FaThumbsUp, FaComment, FaSearch, FaTimes, FaEllipsisH, FaShare, 
     FaGlobeAmericas, FaRegImage, FaUserFriends, FaUserCircle, FaTrash, FaSignOutAlt, FaRegFileAlt,
-    FaRegBookmark, FaBookmark
+    FaRegBookmark, FaBookmark, FaPaperPlane
 } from 'react-icons/fa';
 import './Grupos.css';
 
@@ -34,9 +34,9 @@ const Grupos = () => {
     const [likes, setLikes] = useState({});
     const [guardados, setGuardados] = useState({});
 
-    // --- ESTADOS DE COMENTARIOS (NUEVO) ---
+    // --- ESTADOS DE COMENTARIOS ---
     const [comentarioTexto, setComentarioTexto] = useState({});
-    const [comentariosAbiertos, setComentariosAbiertos] = useState({}); // Controla el despliegue
+    const [comentariosAbiertos, setComentariosAbiertos] = useState({});
 
     // --- ESTADOS DE CREACIÓN Y RECORTE ---
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -50,7 +50,7 @@ const Grupos = () => {
     const fileInputRef = useRef(null);
     const postFotoRef = useRef(null);
 
-    // --- LÓGICA DE DESPLIEGUE ---
+    // --- LÓGICA DE DESPLIEGUE COMENTARIOS ---
     const toggleComentarios = (postId) => {
         setComentariosAbiertos(prev => ({
             ...prev,
@@ -329,14 +329,11 @@ const Grupos = () => {
                                     
                                     <div className="post-action-buttons-fb">
                                         <button onClick={() => toggleLike(post._id)} className={likes[post._id] ? "liked" : ""} style={{color: '#65676b'}}><FaThumbsUp /> Me gusta</button>
-                                        
-                                        {/* BOTÓN COMENTAR: Ahora despliega la sección */}
                                         <button onClick={() => toggleComentarios(post._id)} style={{color: '#65676b'}}><FaComment /> Comentar</button>
-                                        
                                         <button style={{color: '#65676b'}}><FaShare /> Compartir</button>
                                     </div>
 
-                                    {/* SECCIÓN DE COMENTARIOS: Renderizado condicional */}
+                                    {/* SECCIÓN DE COMENTARIOS CON BOTÓN DE ENVIAR A LA DERECHA */}
                                     {estaAbierto && (
                                         <div className="fb-comments-section">
                                             {post.comentarios?.map((com, index) => (
@@ -348,16 +345,22 @@ const Grupos = () => {
                                                     </div>
                                                 </div>
                                             ))}
+                                            
                                             <form onSubmit={(e) => handleComentar(e, post._id)} className="comment-input-wrapper">
                                                 <div className="avatar-circle-wrapper">
                                                     {avatar ? <img src={avatar} className="comment-mini-avatar" alt="yo" /> : <FaUserCircle size={32} color="#ccc" />}
                                                 </div>
-                                                <input 
-                                                    placeholder="Escribe un comentario..." 
-                                                    className="comment-input-field"
-                                                    value={comentarioTexto[post._id] || ""}
-                                                    onChange={(e) => setComentarioTexto({...comentarioTexto, [post._id]: e.target.value})}
-                                                />
+                                                <div className="comment-input-container-with-btn">
+                                                    <input 
+                                                        placeholder="Escribe un comentario..." 
+                                                        className="comment-input-field"
+                                                        value={comentarioTexto[post._id] || ""}
+                                                        onChange={(e) => setComentarioTexto({...comentarioTexto, [post._id]: e.target.value})}
+                                                    />
+                                                    <button type="submit" className="btn-send-comment-icon" disabled={!comentarioTexto[post._id]?.trim()}>
+                                                        <FaPaperPlane />
+                                                    </button>
+                                                </div>
                                             </form>
                                         </div>
                                     )}
@@ -370,7 +373,6 @@ const Grupos = () => {
         );
     }
 
-    // --- RENDER LISTA DE GRUPOS ---
     return (
         <section className="grupos-page">
             <div className="grupos-header-top">
@@ -440,7 +442,6 @@ const Grupos = () => {
                 })}
             </div>
 
-            {/* --- MODAL CREAR --- */}
             {isModalOpen && (
                 <div className="modal-overlay">
                     <div className="vibe-modal-container">
@@ -464,7 +465,6 @@ const Grupos = () => {
                 </div>
             )}
 
-            {/* --- MODAL CROPPER --- */}
             {imageToCrop && (
                 <div className="modal-overlay cropper-overlay">
                     <div className="vibe-modal-container cropper-modal">
