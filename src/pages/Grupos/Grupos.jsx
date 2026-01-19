@@ -34,7 +34,7 @@ const Grupos = () => {
     const [likes, setLikes] = useState({});
     const [guardados, setGuardados] = useState({});
 
-    // --- ESTADOS DE COMENTARIOS ---
+    // --- ESTADOS DE COMENTARIOS (AUMENTADOS) ---
     const [comentarioTexto, setComentarioTexto] = useState({});
     const [comentariosAbiertos, setComentariosAbiertos] = useState({});
 
@@ -50,7 +50,7 @@ const Grupos = () => {
     const fileInputRef = useRef(null);
     const postFotoRef = useRef(null);
 
-    // --- LÓGICA DE DESPLIEGUE COMENTARIOS ---
+    // --- LÓGICA DE DESPLIEGUE ---
     const toggleComentarios = (postId) => {
         setComentariosAbiertos(prev => ({
             ...prev,
@@ -176,7 +176,7 @@ const Grupos = () => {
         finally { setLoading(false); }
     };
 
-    // --- 6. PUBLICACIONES Y COMENTARIOS ---
+    // --- 6. PUBLICACIONES Y COMENTARIOS (AUMENTADO) ---
     const handlePublicar = async (e) => {
         e.preventDefault();
         if (!nuevoPost.trim() && !fotoPost) return;
@@ -328,12 +328,18 @@ const Grupos = () => {
                                     {post.foto && <div className="post-image-main"><img src={post.foto} className="img-full-post" alt="post" /></div>}
                                     
                                     <div className="post-action-buttons-fb">
-                                        <button onClick={() => toggleLike(post._id)} className={likes[post._id] ? "liked" : ""} style={{color: '#65676b'}}><FaThumbsUp /> Me gusta</button>
-                                        <button onClick={() => toggleComentarios(post._id)} style={{color: '#65676b'}}><FaComment /> Comentar</button>
+                                        <button onClick={() => toggleLike(post._id)} className={likes[post._id] ? "liked" : ""} style={{color: '#65676b'}}>
+                                            <FaThumbsUp /> Me gusta
+                                        </button>
+                                        
+                                        <button onClick={() => toggleComentarios(post._id)} style={{color: '#65676b'}}>
+                                            <FaComment /> Comentar
+                                        </button>
+                                        
                                         <button style={{color: '#65676b'}}><FaShare /> Compartir</button>
                                     </div>
 
-                                    {/* SECCIÓN DE COMENTARIOS CON BOTÓN DE ENVIAR A LA DERECHA */}
+                                    {/* SECCIÓN DE COMENTARIOS CON DESPLIEGUE Y BOTÓN DE ENVIAR A LA DERECHA */}
                                     {estaAbierto && (
                                         <div className="fb-comments-section">
                                             {post.comentarios?.map((com, index) => (
@@ -373,6 +379,7 @@ const Grupos = () => {
         );
     }
 
+    // --- RENDER LISTA DE GRUPOS ---
     return (
         <section className="grupos-page">
             <div className="grupos-header-top">
@@ -442,6 +449,7 @@ const Grupos = () => {
                 })}
             </div>
 
+            {/* --- MODAL CREAR --- */}
             {isModalOpen && (
                 <div className="modal-overlay">
                     <div className="vibe-modal-container">
@@ -465,6 +473,7 @@ const Grupos = () => {
                 </div>
             )}
 
+            {/* --- MODAL CROPPER --- */}
             {imageToCrop && (
                 <div className="modal-overlay cropper-overlay">
                     <div className="vibe-modal-container cropper-modal">
