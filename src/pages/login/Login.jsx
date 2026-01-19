@@ -50,7 +50,6 @@ const KawaiiEyeOffIcon = () => (
 const Login = () => {
     const navigate = useNavigate();
     const { register, handleSubmit, formState: { errors } } = useForm();
-
     const setToken = storeAuth((state) => state.setToken);
     const setRol = storeAuth((state) => state.setRol);
 
@@ -69,7 +68,6 @@ const Login = () => {
                 }
             );
 
-            // SOLO lo que el backend envía realmente
             const { token, nombre, correoInstitucional } = res.data;
 
             // 🔒 Validar token
@@ -83,10 +81,10 @@ const Login = () => {
                 return;
             }
 
-            // 🔒 Solo permitir estudiante
+            // 🔒 Validación de rol
             if (data.rol !== "estudiante") {
                 toast.update(loadingToast, {
-                    render: "Acceso denegado. Solo estudiantes pueden ingresar 🚫",
+                    render: `Acceso denegado. Tu rol (${data.rol}) no tiene permiso 🚫`,
                     type: "error",
                     isLoading: false,
                     autoClose: 3500
@@ -94,14 +92,14 @@ const Login = () => {
                 return;
             }
 
-            // Guardado de sesión
-            setToken(token);
-            setRol(data.rol);
-
+            // 💾 Guardar datos
             localStorage.setItem("token", token);
             localStorage.setItem("rol", data.rol);
             localStorage.setItem("nombre", nombre);
             localStorage.setItem("correo", correoInstitucional);
+
+            setToken(token);
+            setRol(data.rol);
 
             toast.update(loadingToast, {
                 render: "¡Bienvenido!",
@@ -142,9 +140,7 @@ const Login = () => {
                                 placeholder="Email universitario"
                                 {...register("email", { required: "El email es obligatorio" })}
                             />
-                            {errors.email && (
-                                <span className="error-text">{errors.email.message}</span>
-                            )}
+                            {errors.email && <span className="error-text">{errors.email.message}</span>}
                         </div>
 
                         <div className="input-group password-group" style={{ position: "relative" }}>
@@ -166,29 +162,20 @@ const Login = () => {
                             >
                                 {showPassword ? <KawaiiEyeIcon /> : <KawaiiEyeOffIcon />}
                             </span>
-                            {errors.password && (
-                                <span className="error-text">{errors.password.message}</span>
-                            )}
+                            {errors.password && <span className="error-text">{errors.password.message}</span>}
                         </div>
 
                         <div className="input-group">
-                            <select
-                                {...register("rol", { required: "Selecciona un rol" })}
-                                className="select-rol"
-                            >
+                            <select {...register("rol", { required: "Selecciona un rol" })} className="select-rol">
                                 <option value="">Seleccionar rol...</option>
                                 <option value="administracion">Administración</option>
                                 <option value="estudiante">Estudiante</option>
                                 <option value="moderador">Moderador</option>
                             </select>
-                            {errors.rol && (
-                                <span className="error-text">{errors.rol.message}</span>
-                            )}
+                            {errors.rol && <span className="error-text">{errors.rol.message}</span>}
                         </div>
 
-                        <button type="submit" className="login-btn">
-                            Iniciar Sesión
-                        </button>
+                        <button type="submit" className="login-btn">Iniciar Sesión</button>
 
                         <Link to="/Forgot-password" className="Forgot-link">
                             ¿Olvidaste tu contraseña?
