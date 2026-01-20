@@ -124,7 +124,6 @@ const Grupos = () => {
                     return g;
                 }));
 
-                // SE LIMPIA EL INPUT TRAS ENVIAR
                 setComentarioTexto(prev => ({ ...prev, [postId]: "" }));
             }
         } catch (error) {
@@ -278,7 +277,12 @@ const Grupos = () => {
                                             <span className="time-fb">Ahora · <FaGlobeAmericas /></span>
                                         </div>
                                     </div>
-                                    <div className="post-body-text" style={{color: '#000'}}>{post.contenido}</div>
+                                    
+                                    {/* SECCIÓN CORREGIDA: Texto con espacio (padding) para que no pegue al margen */}
+                                    <div className="post-body-text" style={{ color: '#000', padding: '0 20px', marginBottom: '12px' }}>
+                                        {post.contenido}
+                                    </div>
+
                                     {post.foto && <img src={post.foto} className="img-full-post" alt="p" />}
                                     
                                     <div className="post-action-buttons-fb">
@@ -294,7 +298,6 @@ const Grupos = () => {
                                                     <img src={com.autorFoto || "https://via.placeholder.com/32"} className="comment-mini-avatar" alt="c" />
                                                     <div className="comment-bubble" style={{ backgroundColor: '#f0f2f5', borderRadius: '18px', padding: '8px 12px' }}>
                                                         <div className="comment-author-name" style={{ fontWeight: 'bold', fontSize: '12px', color: '#000' }}>{com.autor}</div>
-                                                        {/* AUMENTO: Sangría de 50px aplicada al texto */}
                                                         <div className="comment-text" style={{ fontSize: '13px', color: '#000', marginLeft: '50px' }}>{com.contenido}</div>
                                                     </div>
                                                 </div>
@@ -308,7 +311,6 @@ const Grupos = () => {
                                                         value={comentarioTexto[post._id] || ""}
                                                         onChange={(e) => setComentarioTexto({...comentarioTexto, [post._id]: e.target.value})}
                                                     />
-                                                    {/* AUMENTO: Botón configurado para enviar */}
                                                     <button type="submit" className="btn-send-comment-icon" style={{ background: 'none', border: 'none', color: '#1877f2', cursor: 'pointer' }}>
                                                         <FaPaperPlane />
                                                     </button>
