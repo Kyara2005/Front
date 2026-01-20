@@ -85,14 +85,13 @@ const Grupos = () => {
         else localStorage.removeItem("ultimoGrupoVisitado");
     }, [grupoActivo]);
 
-    // --- 4. LÓGICA DE COMENTARIOS CORREGIDA ---
+    // --- 4. LÓGICA DE COMENTARIOS ---
     const toggleComentarios = (postId) => {
         setComentariosAbiertos(prev => ({ ...prev, [postId]: !prev[postId] }));
     };
 
     const handleComentar = async (e, postId) => {
-        if (e) e.preventDefault(); // Detener recarga de página
-        
+        if (e) e.preventDefault(); 
         const texto = comentarioTexto[postId];
         if (!texto || !texto.trim()) return;
 
@@ -110,8 +109,6 @@ const Grupos = () => {
 
             if (res.ok) {
                 const nuevoComentario = await res.json();
-                
-                // Actualizar estado local para ver el comentario al instante
                 setGrupos(prevGrupos => prevGrupos.map(g => {
                     if (g._id === grupoActivo._id) {
                         return {
@@ -125,17 +122,14 @@ const Grupos = () => {
                     }
                     return g;
                 }));
-
-                // LIMPIAR EL INPUT
                 setComentarioTexto(prev => ({ ...prev, [postId]: "" }));
             }
-        } catch (error) {
-            console.error("Error al publicar comentario:", error);
-        }
+        } catch (error) { console.error("Error comentar:", error); }
     };
 
     // --- 5. LÓGICA DE RECORTE ---
     const onCropComplete = useCallback((_ , pixels) => { setCroppedAreaPixels(pixels); }, []);
+    
     const handleConfirmCrop = async () => {
         try {
             const image = new Image();
@@ -164,10 +158,13 @@ const Grupos = () => {
     };
 
     const handleEliminarGrupo = async (id) => {
-        if (!window.confirm("¿Eliminar definitivamente?")) return;
+        if (!window.confirm("¿Eliminar definitivamente este grupo?")) return;
         try {
             const res = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
-            if (res.ok) { cargarGrupos(); setGrupoActivo(null); }
+            if (res.ok) {
+                cargarGrupos();
+                setGrupoActivo(null);
+            }
         } catch (error) { console.error(error); }
     };
 
@@ -202,11 +199,20 @@ const Grupos = () => {
             const res = await fetch(`${API_URL}/${grupoActivo._id}/post`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ autor: userName, autorFoto: avatar, autorEmail: userEmail, contenido: nuevoPost, foto: fotoPost })
+                body: JSON.stringify({
+                    autor: userName,
+                    autorFoto: avatar,
+                    autorEmail: userEmail,
+                    contenido: nuevoPost,
+                    foto: fotoPost
+                })
             });
             const postGuardado = await res.json();
-            setGrupos(prev => prev.map(g => g._id === grupoActivo._id ? { ...g, posts: [postGuardado, ...g.posts] } : g));
-            setNuevoPost(""); setFotoPost(null);
+            setGrupos(prev => prev.map(g => 
+                g._id === grupoActivo._id ? { ...g, posts: [postGuardado, ...g.posts] } : g
+            ));
+            setNuevoPost("");
+            setFotoPost(null);
         } catch (error) { console.error(error); }
         finally { setLoading(false); }
     };
@@ -249,12 +255,29 @@ const Grupos = () => {
                             <div className="fb-header-btns">
                                 <button className="btn-fb-blue"><FaPlus /> Invitar</button>
                                 <button className="btn-fb-gray"><FaUserFriends /> Miembro</button>
+                                {userRole === "admin" && (
+                                    <button className="btn-fb-gray" onClick={() => handleEliminarGrupo(grupoData._id)}><FaTrash color="red" /></button>
+                                )}
                             </div>
+                        </div>
+                        <div className="fb-nav-tabs">
+                            <button className="active">Publicaciones</button>
+                            <button>Información</button>
+                            <button>Miembros</button>
+                            <button>Eventos</button>
                         </div>
                     </div>
                 </div>
 
-                <div className="fb-body-grid single-column">
+                <div className="fb-body-grid">
+                    <aside className="fb-sidebar-left">
+                        <div className="fb-card-white">
+                            <h3 style={{color: '#000'}}>Información</h3>
+                            <p style={{color: '#000'}}>Bienvenido al grupo oficial de {grupoData.nombre}.</p>
+                            <button className="btn-sidebar-full">Ver todo</button>
+                        </div>
+                    </aside>
+
                     <main className="fb-feed-center">
                         <div className="fb-card-white publish-area">
                             <div className="publish-input-row">
@@ -263,90 +286,117 @@ const Grupos = () => {
                             </div>
                             {fotoPost && <div className="fb-post-preview-container"><img src={fotoPost} alt="p" /><button onClick={() => setFotoPost(null)}><FaTimes /></button></div>}
                             <div className="publish-footer-fb">
-                                <button onClick={() => postFotoRef.current.click()}><FaRegImage color="#45bd62" /> Foto</button>
+                                <button onClick={() => postFotoRef.current.click()}><FaRegImage color="#45bd62" /> Foto/video</button>
+                                <button><FaUserFriends color="#1877f2" /> Etiquetar</button>
                                 <button onClick={handlePublicar} className="btn-send-fb">Publicar</button>
                                 <input type="file" ref={postFotoRef} style={{display:'none'}} onChange={(e) => handleImagePreview(e, 'post')} />
                             </div>
                         </div>
 
-                        {grupoData.posts?.map(post => {
-                            const estaAbierto = comentariosAbiertos[post._id];
-                            return (
-                                <div key={post._id} className="fb-card-white post-container">
-                                    <div className="post-top-header">
+                        {grupoData.posts?.map(post => (
+                            <div key={post._id} className="fb-card-white post-container">
+                                <div className="post-top-header">
+                                    <div className="post-info-left">
                                         <img src={post.autorFoto || "https://via.placeholder.com/40"} className="mini-avatar-fb" alt="a" />
                                         <div className="post-user-meta">
                                             <span className="author-fb" style={{color: '#000'}}>{post.autor}</span>
                                             <span className="time-fb">Ahora · <FaGlobeAmericas /></span>
                                         </div>
                                     </div>
-                                    
-                                    {/* TEXTO DE LA PUBLICACIÓN CON ESPACIO/PADDING */}
-                                    <div className="post-body-text" style={{color: '#000', padding: '0 20px', marginBottom: '12px'}}>
-                                        {post.contenido}
-                                    </div>
-
-                                    {post.foto && <img src={post.foto} className="img-full-post" alt="p" />}
-                                    
-                                    <div className="post-action-buttons-fb">
-                                        <button onClick={() => toggleLike(post._id)} className={likes[post._id] ? "liked" : ""}><FaThumbsUp /> Like</button>
-                                        <button onClick={() => toggleComentarios(post._id)}><FaComment /> Comentar</button>
-                                        <button><FaShare /> Compartir</button>
-                                    </div>
-
-                                    {estaAbierto && (
-                                        <div className="fb-comments-section" style={{ borderTop: '1px solid #eee', padding: '10px 0' }}>
-                                            {post.comentarios?.map((com, i) => (
-                                                <div key={i} className="comment-item" style={{ display: 'flex', gap: '8px', padding: '5px 15px' }}>
-                                                    <img src={com.autorFoto || "https://via.placeholder.com/32"} className="comment-mini-avatar" alt="c" />
-                                                    <div className="comment-bubble" style={{ backgroundColor: '#f0f2f5', borderRadius: '18px', padding: '8px 12px' }}>
-                                                        <div className="comment-author-name" style={{ fontWeight: 'bold', fontSize: '12px', color: '#000' }}>{com.autor}</div>
-                                                        <div className="comment-text" style={{ fontSize: '13px', color: '#000', marginLeft: '50px' }}>{com.contenido}</div>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                            
-                                            {/* FORMULARIO PARA COMENTAR */}
-                                            <form onSubmit={(e) => handleComentar(e, post._id)} className="comment-input-wrapper" style={{ display: 'flex', gap: '8px', padding: '10px 15px' }}>
-                                                <img src={avatar || "https://via.placeholder.com/32"} className="comment-mini-avatar" alt="yo" />
-                                                <div className="comment-input-container-with-btn" style={{ flex: 1, display: 'flex', backgroundColor: '#f0f2f5', borderRadius: '20px', padding: '0 12px', alignItems: 'center' }}>
-                                                    <input 
-                                                        placeholder="Escribe un comentario..." 
-                                                        style={{ flex: 1, border: 'none', background: 'transparent', padding: '8px 0', outline: 'none', color: '#000' }}
-                                                        value={comentarioTexto[post._id] || ""}
-                                                        onChange={(e) => setComentarioTexto({...comentarioTexto, [post._id]: e.target.value})}
-                                                    />
-                                                    {/* BOTÓN CON TYPE SUBMIT */}
-                                                    <button type="submit" style={{ background: 'none', border: 'none', color: '#1877f2', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
-                                                        <FaPaperPlane />
-                                                    </button>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    )}
+                                    <FaEllipsisH color="#65676b" />
                                 </div>
-                            );
-                        })}
+                                
+                                {/* AUMENTO: PADDING PARA QUE NO PEGUE AL MARGEN */}
+                                <div className="post-body-text" style={{color: '#000', padding: '0 20px', marginBottom: '10px'}}>
+                                    {post.contenido}
+                                </div>
+
+                                {post.foto && <img src={post.foto} className="img-full-post" alt="p" />}
+                                
+                                <div className="post-stats-fb" style={{color: '#65676b'}}>
+                                    <span><FaThumbsUp color="#1877f2" /> {likes[post._id] ? 1 : 0}</span>
+                                    <span>{post.comentarios?.length || 0} comentarios</span>
+                                </div>
+
+                                <div className="post-action-buttons-fb">
+                                    <button onClick={() => toggleLike(post._id)} className={likes[post._id] ? "liked" : ""}><FaThumbsUp /> Me gusta</button>
+                                    <button onClick={() => toggleComentarios(post._id)}><FaComment /> Comentar</button>
+                                    <button onClick={() => toggleGuardar(post._id)} className={guardados[post._id] ? "saved" : ""}>
+                                        {guardados[post._id] ? <FaBookmark /> : <FaRegBookmark />} Guardar
+                                    </button>
+                                    <button><FaShare /> Compartir</button>
+                                </div>
+
+                                {comentariosAbiertos[post._id] && (
+                                    <div className="fb-comments-section">
+                                        {post.comentarios?.map((com, i) => (
+                                            <div key={i} className="comment-item">
+                                                <img src={com.autorFoto || "https://via.placeholder.com/32"} className="comment-mini-avatar" alt="c" />
+                                                <div className="comment-bubble">
+                                                    <div className="comment-author-name" style={{color: '#000'}}>{com.autor}</div>
+                                                    {/* AUMENTO: SANGRÍA DE 50PX */}
+                                                    <div className="comment-text" style={{color: '#000', marginLeft: '50px'}}>{com.contenido}</div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                        <form onSubmit={(e) => handleComentar(e, post._id)} className="comment-input-wrapper">
+                                            <img src={avatar || "https://via.placeholder.com/32"} className="comment-mini-avatar" alt="yo" />
+                                            <div className="comment-input-container-with-btn">
+                                                <input 
+                                                    placeholder="Escribe un comentario..." 
+                                                    style={{color: '#000'}}
+                                                    value={comentarioTexto[post._id] || ""}
+                                                    onChange={(e) => setComentarioTexto({...comentarioTexto, [post._id]: e.target.value})}
+                                                />
+                                                {/* AUMENTO: BOTÓN DE ENVÍO ACTIVO */}
+                                                <button type="submit" className="btn-comment-submit-vibe">
+                                                    <FaPaperPlane />
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                )}
+                            </div>
+                        ))}
                     </main>
+
+                    <aside className="fb-sidebar-right">
+                        <div className="fb-card-white">
+                            <h3 style={{color: '#000'}}>Miembros</h3>
+                            <div className="miembros-preview-list">
+                                {grupoData.miembrosArray?.slice(0, 5).map((m, i) => (
+                                    <div key={i} className="miembro-mini-row">
+                                        <FaUserCircle size={24} color="#ccc" />
+                                        <span style={{color: '#000'}}>{m.split('@')[0]}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </aside>
                 </div>
             </div>
         );
     }
 
-    // --- RENDER LISTA ---
     return (
         <section className="grupos-page">
             <div className="grupos-header-top">
                 <div className="header-left-side">
                     <button className="btn-back-main-page" onClick={() => window.history.back()}><FaArrowLeft /></button>
-                    <h2 style={{color: '#000'}}>Comunidades</h2>
+                    <h2 style={{color: '#000'}}>Grupos</h2>
                 </div>
-                <button className="btn-crear-grupo" onClick={() => setIsModalOpen(true)}><FaPlus /> Crear Grupo</button>
+                <button className="btn-crear-grupo" onClick={() => setIsModalOpen(true)}><FaPlus /> Crear nuevo grupo</button>
             </div>
             
             <div className="search-bar-pure-white">
                 <FaSearch />
                 <input type="text" placeholder="Buscar grupos..." value={filtro} onChange={(e) => setFiltro(e.target.value)} />
+            </div>
+
+            <div className="grupos-nav-pestanas">
+                <button className={pestana === "todos" ? "active" : ""} onClick={() => setPestana("todos")}>Todos los grupos</button>
+                <button className={pestana === "sugeridos" ? "active" : ""} onClick={() => setPestana("sugeridos")}>Sugerencias</button>
+                <button className={pestana === "mis" ? "active" : ""} onClick={() => setPestana("mis")}>Mis grupos</button>
             </div>
 
             <div className="grupos-grid-moderno">
@@ -356,10 +406,16 @@ const Grupos = () => {
                             <img src={grupo.imagen || "https://via.placeholder.com/150"} className="grupo-img-mini-square" alt="g" />
                             <div className="grupo-textos-info">
                                 <h3 className="grupo-nombre-bold" style={{color: '#000'}}>{grupo.nombre}</h3>
-                                <p>{grupo.miembrosArray?.length || 1} miembros</p>
+                                <p style={{color: '#65676b'}}>{grupo.miembrosArray?.length || 1} miembros</p>
                             </div>
                         </div>
-                        <button className="btn-ver-grupo-vibe-blue" onClick={() => entrarAGrupo(grupo)}>Entrar</button>
+                        <div className="grupo-card-actions">
+                            {grupo.miembrosArray?.includes(userEmail) ? (
+                                <button className="btn-ver-grupo-vibe-blue" onClick={() => entrarAGrupo(grupo)}>Entrar</button>
+                            ) : (
+                                <button className="btn-unirse-vibe" onClick={() => handleUnirseGrupo(grupo)}>Unirme</button>
+                            )}
+                        </div>
                     </div>
                 ))}
             </div>
@@ -368,14 +424,20 @@ const Grupos = () => {
                 <div className="modal-overlay">
                     <div className="vibe-modal-container">
                         <button className="vibe-close-circle" onClick={() => setIsModalOpen(false)}><FaTimes /></button>
-                        <h3 style={{color: '#000'}}>Nuevo Grupo</h3>
+                        <h3 style={{color: '#000'}}>Crear grupo</h3>
                         <form onSubmit={handleCrearGrupo}>
-                            <input className="vibe-input-field" placeholder="Nombre" required value={nuevoGrupo.nombre} onChange={(e) => setNuevoGrupo({...nuevoGrupo, nombre: e.target.value})} />
-                            <div className="vibe-upload-box" onClick={() => fileInputRef.current.click()}>
-                                {nuevoGrupo.imagen ? <img src={nuevoGrupo.imagen} className="vibe-img-fit" alt="p" /> : <p>Subir foto de portada</p>}
+                            <div className="vibe-input-group">
+                                <label style={{color: '#000'}}>Nombre del grupo</label>
+                                <input className="vibe-input-field" placeholder="Nombre" required value={nuevoGrupo.nombre} onChange={(e) => setNuevoGrupo({...nuevoGrupo, nombre: e.target.value})} />
+                            </div>
+                            <div className="vibe-input-group">
+                                <label style={{color: '#000'}}>Portada</label>
+                                <div className="vibe-upload-box" onClick={() => fileInputRef.current.click()}>
+                                    {nuevoGrupo.imagen ? <img src={nuevoGrupo.imagen} className="vibe-img-fit" alt="p" /> : <p>Haz clic para subir foto</p>}
+                                </div>
                             </div>
                             <input type="file" ref={fileInputRef} style={{display:'none'}} onChange={(e) => handleImagePreview(e, 'grupo')} />
-                            <button type="submit" className="vibe-btn-primary-full">Crear</button>
+                            <button type="submit" className="vibe-btn-primary-full" disabled={loading}>{loading ? "Creando..." : "Crear Grupo"}</button>
                         </form>
                     </div>
                 </div>
@@ -389,7 +451,7 @@ const Grupos = () => {
                         </div>
                         <div className="cropper-footer">
                             <button onClick={() => setImageToCrop(null)}>Cancelar</button>
-                            <button className="btn-confirm-vibe" onClick={handleConfirmCrop}>Guardar</button>
+                            <button className="btn-confirm-vibe" onClick={handleConfirmCrop}>Guardar recorte</button>
                         </div>
                     </div>
                 </div>
