@@ -124,6 +124,7 @@ const Grupos = () => {
                     return g;
                 }));
 
+                // Limpiar el input después de publicar
                 setComentarioTexto(prev => ({ ...prev, [postId]: "" }));
             }
         } catch (error) {
@@ -278,8 +279,8 @@ const Grupos = () => {
                                         </div>
                                     </div>
                                     
-                                    {/* SECCIÓN CORREGIDA: Texto con espacio (padding) para que no pegue al margen */}
-                                    <div className="post-body-text" style={{ color: '#000', padding: '0 20px', marginBottom: '12px' }}>
+                                    {/* CORRECCIÓN: Padding horizontal para que el texto no se pegue al borde */}
+                                    <div className="post-body-text" style={{color: '#000', padding: '0 16px', marginBottom: '10px'}}>
                                         {post.contenido}
                                     </div>
 
@@ -298,20 +299,22 @@ const Grupos = () => {
                                                     <img src={com.autorFoto || "https://via.placeholder.com/32"} className="comment-mini-avatar" alt="c" />
                                                     <div className="comment-bubble" style={{ backgroundColor: '#f0f2f5', borderRadius: '18px', padding: '8px 12px' }}>
                                                         <div className="comment-author-name" style={{ fontWeight: 'bold', fontSize: '12px', color: '#000' }}>{com.autor}</div>
+                                                        {/* Sangría del texto del comentario */}
                                                         <div className="comment-text" style={{ fontSize: '13px', color: '#000', marginLeft: '50px' }}>{com.contenido}</div>
                                                     </div>
                                                 </div>
                                             ))}
                                             <form onSubmit={(e) => handleComentar(e, post._id)} className="comment-input-wrapper" style={{ display: 'flex', gap: '8px', padding: '10px 15px' }}>
                                                 <img src={avatar || "https://via.placeholder.com/32"} className="comment-mini-avatar" alt="yo" />
-                                                <div className="comment-input-container-with-btn" style={{ flex: 1, display: 'flex', backgroundColor: '#f0f2f5', borderRadius: '20px', padding: '0 12px' }}>
+                                                <div className="comment-input-container-with-btn" style={{ flex: 1, display: 'flex', backgroundColor: '#f0f2f5', borderRadius: '20px', padding: '0 12px', alignItems: 'center' }}>
                                                     <input 
                                                         placeholder="Escribe un comentario..." 
                                                         style={{ flex: 1, border: 'none', background: 'transparent', padding: '8px 0', outline: 'none', color: '#000' }}
                                                         value={comentarioTexto[post._id] || ""}
                                                         onChange={(e) => setComentarioTexto({...comentarioTexto, [post._id]: e.target.value})}
                                                     />
-                                                    <button type="submit" className="btn-send-comment-icon" style={{ background: 'none', border: 'none', color: '#1877f2', cursor: 'pointer' }}>
+                                                    {/* BOTÓN DE ENVÍO (ICONO DE AVIÓN) */}
+                                                    <button type="submit" style={{ background: 'none', border: 'none', color: '#1877f2', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
                                                         <FaPaperPlane />
                                                     </button>
                                                 </div>
