@@ -1,21 +1,24 @@
-import { Routes, Route, BrowserRouter } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useEffect } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css";
 
-// 📄 Páginas públicas
+// =====================
+// 📄 PÁGINAS PÚBLICAS
+// =====================
 import Landing from "./pages/Landing";
 import Register from "./pages/register/Register";
 import Login from "./pages/login/Login";
 import Gracias from "./pages/gracias/Gracias";
 import Contacto from "./pages/contacto/Contacto";
-import Eventos from "./pages/eventos/Eventos";
 import Beneficios from "./pages/beneficios/Beneficios";
 import ForgotPassword from "./pages/forgot-password/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import { Confirm } from "./pages/confirm";
 
-// 🔐 Páginas privadas
+// =====================
+// 🔐 PÁGINAS PRIVADAS
+// =====================
 import Dashboard from "./pages/dashboard/Dashboard";
 import Perfil from "./pages/perfil/Perfil";
 import Matches from "./pages/Matches/Matches";
@@ -24,12 +27,18 @@ import Ajustes from "./pages/Ajustes/Ajustes.jsx";
 import ActualizarInfo from "./Actualizacion/ActualizarInfo.jsx";
 import ChangePasswordForm from "./pages/Password/ActualizarPass.jsx";
 import Grupos from "./pages/Grupos/Grupos.jsx";
+import Eventos from "./pages/eventos/Eventos";
+import Gusuario from "./pages/Gusuario.jsx";
 
-// 🧭 Rutas protegidas
+// =====================
+// 🧭 RUTAS PROTEGIDAS
+// =====================
 import PublicRoute from "./routes/PublicRouter.jsx";
 import PrivateRoute from "./routes/PrivateRouter.jsx";
 
-// 🗃️ Stores
+// =====================
+// 🗃️ STORES
+// =====================
 import storeProfile from "./context/storeProfile";
 import storeAuth from "./context/storeAuth";
 
@@ -37,14 +46,14 @@ function App() {
   const profile = storeProfile((state) => state.profile);
   const token = storeAuth((state) => state.token);
 
-  // 🔹 SOLO pedir perfil si hay token
+  // 🔹 Cargar perfil SOLO si hay token
   useEffect(() => {
     if (token) {
       profile();
     }
   }, [token, profile]);
 
-  // 🔹 Animaciones
+  // 🔹 Inicializar animaciones
   useEffect(() => {
     AOS.init({ once: true });
   }, []);
@@ -73,20 +82,20 @@ function App() {
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="perfil" element={<Perfil />} />
           <Route path="matches" element={<Matches />} />
-          <Route path="MUsuario" element={<MUsuario />} />
-          <Route path="UserProfile" element={<MUsuario />} />
-          <Route path="Ajustes" element={<Ajustes />} />
-          <Route path="ActualizarInfo" element={<ActualizarInfo />} />
-          <Route path="ActualizarPass" element={<ChangePasswordForm />} />
-          <Route path="Grupos" element={<Grupos />} />
-          <Route path="Eventos" element={<Eventos />} />
+          <Route path="musuario" element={<MUsuario />} />
+          <Route path="userprofile" element={<MUsuario />} />
+          <Route path="ajustes" element={<Ajustes />} />
+          <Route path="actualizar-info" element={<ActualizarInfo />} />
+          <Route path="actualizar-pass" element={<ChangePasswordForm />} />
+          <Route path="grupos" element={<Grupos />} />
+          <Route path="eventos" element={<Eventos />} />
+          <Route path="gusuarios" element={<Gusuario />} />
         </Route>
 
         {/* ===================== */}
         {/* 📢 PÚBLICAS LIBRES */}
         {/* ===================== */}
         <Route path="contacto" element={<Contacto />} />
-        <Route path="eventos" element={<Eventos />} />
         <Route path="beneficios" element={<Beneficios />} />
 
       </Routes>

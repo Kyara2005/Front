@@ -207,7 +207,7 @@ const Dashboard = () => {
                         <p>Administra los perfiles y permisos del sistema.</p>
                         <button 
                             className="dashboard-btn"
-                            onClick={() => navigate("/GestionUsuarios")}
+                            onClick={() => navigate("/Gusuario")}
                         >
                             Ver Gestión
                         </button>

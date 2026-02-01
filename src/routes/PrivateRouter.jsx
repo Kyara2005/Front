@@ -1,16 +1,15 @@
-// src/routes/PrivateRouter.jsx
-import { Navigate, Outlet } from "react-router";
+import { Navigate, Outlet } from "react-router-dom";
 import storeAuth from "../context/storeAuth";
 
 const PrivateRoute = () => {
   const token = storeAuth((state) => state.token);
-  
-  // Si NO hay token → redirigir a login
+
+  // 🔐 Si no hay token → login
   if (!token) {
     return <Navigate to="/login" replace />;
   }
 
-  // Si HAY token → se permiten las rutas protegidas
+  // ✅ Si hay token → renderizar rutas hijas
   return <Outlet />;
 };
 

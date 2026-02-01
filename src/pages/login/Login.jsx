@@ -147,16 +147,6 @@ const Login = () => {
                             {errors.password && <span className="error-text">{errors.password.message}</span>}
                         </div>
 
-                        <div className="input-group">
-                            <select {...register("rol", { required: "Selecciona un rol" })} className="select-rol">
-                                <option value="">Seleccionar rol...</option>
-                                <option value="administracion">Administración</option>
-                                <option value="estudiante">Estudiante</option>
-                                <option value="moderador">Moderador</option>
-                            </select>
-                            {errors.rol && <span className="error-text">{errors.rol.message}</span>}
-                        </div>
-
                         <button type="submit" className="login-btn">Iniciar Sesión</button>
 
                         <Link to="/Forgot-password" className="Forgot-link">
