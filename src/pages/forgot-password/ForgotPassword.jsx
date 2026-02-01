@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { IoArrowBack } from "react-icons/io5";
 import axios from "axios";
 import "react-toastify/dist/ReactToastify.css";
+import "./ForgotPassword.css";
 
 const ForgotPassword = () => {
     const { register, handleSubmit, formState: { errors } } = useForm();
@@ -34,104 +35,37 @@ const ForgotPassword = () => {
         }
     };
 
-    // Estilos inline para reemplazar el CSS externo
-    const styles = {
-        container: {
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            minHeight: "100vh",
-            background: "linear-gradient(135deg, #ffb07c, #9f6bff)",
-            padding: "20px",
-            position: "relative"
-        },
-        card: {
-            background: "white",
-            width: "400px",
-            padding: "40px",
-            borderRadius: "20px",
-            boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-            textAlign: "center"
-        },
-        title: {
-            fontSize: "28px",
-            fontWeight: "bold"
-        },
-        subtitle: {
-            marginTop: "8px",
-            color: "#555",
-            fontSize: "15px"
-        },
-        backBtn: {
-            position: "absolute",
-            top: "25px",
-            left: "25px",
-            color: "black"
-        },
-        form: {
-            marginTop: "20px"
-        },
-        input: {
-    width: "100%",
-    height: "44px",               // ⬅️ más pequeño
-    padding: "10px 14px",         // ⬅️ MISMO espacio izq / der
-    border: "1px solid #ccc",
-    borderRadius: "10px",
-    fontSize: "15px",
-    boxSizing: "border-box",      // ⬅️ CLAVE
-    textAlign: "left"
-},
-        errorText: {
-            display: "block",
-            fontSize: "13px",
-            color: "red",
-            marginTop: "4px"
-        },
-        button: {
-            width: "100%",
-            padding: "13px",
-            background: "#8a3dff",
-            color: "white",
-            fontSize: "16px",
-            fontWeight: "bold",
-            border: "none",
-            borderRadius: "12px",
-            marginTop: "20px",
-            cursor: "pointer",
-            transition: "0.3s"
-        },
-        buttonHover: {
-            background: "#6c24ff"
-        }
-    };
-
     return (
         <>
-            <div style={styles.container}>
-                <Link to="/login" style={styles.backBtn}>
+            <div className="forgot-container">
+                <Link to="/login" className="forgot-back-btn">
                     <IoArrowBack size={30} />
                 </Link>
 
-                <div style={styles.card}>
-                    <h2 style={styles.title}>Recuperar contraseña</h2>
-                    <p style={styles.subtitle}>
+                <div className="forgot-card">
+                    <h2 className="forgot-title">Recuperar contraseña</h2>
+                    <p className="forgot-subtitle">
                         Ingresa tu correo institucional y te enviaremos un enlace para restablecer tu contraseña.
                     </p>
 
-                    <form style={styles.form} onSubmit={handleSubmit(handleForgot)}>
-                        <div className="input-group">
+                    <form className="forgot-form" onSubmit={handleSubmit(handleForgot)}>
+                        <div className="forgot-input-group">
                             <input
                                 type="email"
                                 placeholder="Correo institucional"
-                                {...register("email", { required: "El email es obligatorio" })}
-                                style={styles.input}
+                                className="forgot-input"
+                                {...register("email", { 
+                                    required: "El email es obligatorio" 
+                                })}
                             />
                             {errors.email && (
-                                <span style={styles.errorText}>{errors.email.message}</span>
+                                <span className="forgot-error-text">
+                                    {errors.email.message}
+                                </span>
                             )}
                         </div>
 
-                        <button type="submit" style={styles.button}>
+                        <button type="submit" className="forgot-button">
                             Enviar instrucciones
                         </button>
                     </form>
