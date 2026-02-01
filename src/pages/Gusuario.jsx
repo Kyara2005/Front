@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
+import storeAuth from "../../context/storeAuth";
 
-// 🔗 URL REAL DEL BACKEND (usuarios)
+// 🔗 URL DEL BACKEND
 const API_URL =
   "https://controversial-jacquette-vibe-u-d09f766e.koyeb.app/api/users";
 
@@ -18,12 +19,12 @@ export default function Gusuario() {
       setLoading(true);
       setError(null);
 
-      const token = localStorage.getItem("token");
+      const token = storeAuth.getState().token;
 
       const res = await fetch(API_URL, {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, // 🔐 JWT
+          Authorization: `Bearer ${token}`,
         },
       });
 
@@ -32,8 +33,6 @@ export default function Gusuario() {
       }
 
       const data = await res.json();
-
-      // Asegura array
       setUsuarios(Array.isArray(data) ? data : data.users || []);
     } catch (err) {
       console.error(err);
@@ -52,11 +51,13 @@ export default function Gusuario() {
   // ELIMINAR USUARIO
   // ===============================
   const eliminarUsuario = async (id) => {
-    const confirmar = window.confirm("¿Seguro que deseas eliminar este usuario?");
+    const confirmar = window.confirm(
+      "¿Seguro que deseas eliminar este usuario?"
+    );
     if (!confirmar) return;
 
     try {
-      const token = localStorage.getItem("token");
+      const token = storeAuth.getState().token;
 
       const res = await fetch(`${API_URL}/${id}`, {
         method: "DELETE",
@@ -66,7 +67,7 @@ export default function Gusuario() {
       });
 
       if (!res.ok) {
-        throw new Error("No se pudo eliminar");
+        throw new Error("No se pudo eliminar el usuario");
       }
 
       setUsuarios((prev) => prev.filter((u) => u._id !== id));
@@ -129,7 +130,6 @@ export default function Gusuario() {
       <div style={{ overflowX: "auto" }}>
         <table
           width="100%"
-          border="1"
           cellPadding="10"
           cellSpacing="0"
           style={{ borderCollapse: "collapse" }}
