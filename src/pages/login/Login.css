@@ -152,6 +152,7 @@
 }
 
 .register-link:hover {
+    color: #5d49c8;
     text-decoration: underline;
 }
 
@@ -160,6 +161,10 @@
     font-size: 0.9em;
     color: #5d49c8;
     text-decoration: none;
+}
+.Forgot-link:hover {
+    color: #5d49c8;
+    text-decoration: underline;
 }
 
 /* ===============================
