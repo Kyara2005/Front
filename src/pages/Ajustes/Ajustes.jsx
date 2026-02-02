@@ -90,14 +90,14 @@ const Ajustes = () => {
 
           <div
             className="ajustes-row hover-card"
-            onClick={() => navigate("/ActualizarInfo")}
+            onClick={() => navigate("/actualizar-info")}
           >
             <span>Actualizar información de cuenta</span>
           </div>
 
           <div
             className="ajustes-row hover-highlight"
-            onClick={() => navigate("/ActualizarPass")}
+            onClick={() => navigate("/actualizar-pass")}
           >
             <span>Cambiar contraseña</span>
           </div>
