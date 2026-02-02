@@ -24,7 +24,7 @@ import Ajustes from "./pages/Ajustes/Ajustes.jsx";
 import ActualizarInfo from "./Actualizacion/ActualizarInfo.jsx";
 import ChangePasswordForm from "./pages/Password/ActualizarPass.jsx";
 import Grupos from "./pages/Grupos/Grupos.jsx";
-import Gusuario from "./pages/gusuarios/Gusuarios.jsx";
+import Gusuarios from "./pages/gusuarios/Gusuarios.jsx";
 
 // 🧭 Rutas protegidas
 import PublicRoute from "./routes/PublicRouter.jsx";
