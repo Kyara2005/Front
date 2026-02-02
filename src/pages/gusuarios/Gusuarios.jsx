@@ -35,27 +35,28 @@ export default function Gusuario() {
   }, []);
 
   // ===============================
-  // LÓGICA: CAMBIAR A ADMINISTRADOR
+  // LÓGICA: CAMBIAR ROL (TOGGLE)
   // ===============================
-  const handlePromover = async (id) => {
-    if (!window.confirm("¿Deseas convertir a este usuario en administrador?")) return;
+  const handleCambiarRol = async (usuario) => {
+    const nuevoRol = usuario.rol === "administrador" ? "estudiante" : "administrador";
+    const mensaje = `¿Deseas cambiar el rol de ${usuario.nombre} a ${nuevoRol}?`;
+    
+    if (!window.confirm(mensaje)) return;
 
     try {
-      // Ajusta esta URL según tu endpoint de actualización
-      const res = await fetch(`${API_URL}/${id}`, {
+      const res = await fetch(`${API_URL}/${usuario._id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ rol: "administrador" }),
+        body: JSON.stringify({ rol: nuevoRol }),
       });
 
       if (res.ok) {
         setUsuarios((prev) =>
-          prev.map((u) => (u._id === id ? { ...u, rol: "administrador" } : u))
+          prev.map((u) => (u._id === usuario._id ? { ...u, rol: nuevoRol } : u))
         );
-        alert("Usuario promovido exitosamente");
       }
     } catch (err) {
       alert("No se pudo actualizar el rol");
@@ -66,21 +67,16 @@ export default function Gusuario() {
   // LÓGICA: ELIMINAR DE LA BDD
   // ===============================
   const handleEliminar = async (id) => {
-    if (!window.confirm("¿Estás seguro? Esta acción eliminará al usuario de la base de datos permanentemente.")) return;
+    if (!window.confirm("¿Estás seguro? Se eliminará permanentemente de la BDD.")) return;
 
     try {
       const res = await fetch(`${API_URL}/${id}`, {
         method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (res.ok) {
         setUsuarios((prev) => prev.filter((u) => u._id !== id));
-        alert("Usuario eliminado de la base de datos");
-      } else {
-        throw new Error();
       }
     } catch (err) {
       alert("Error al eliminar el registro");
@@ -145,12 +141,13 @@ export default function Gusuario() {
                   </td>
                   <td>
                     <div className="actions-cell" style={{ justifyContent: "center" }}>
-                      {/* Botón condicional: solo si no es admin ya */}
-                      {usuario.rol !== "administrador" && (
-                        <button className="btn-edit" onClick={() => handlePromover(usuario._id)}>
-                          ⬆️ Hacer Admin
-                        </button>
-                      )}
+                      {/* BOTÓN DINÁMICO SEGÚN EL ROL */}
+                      <button 
+                        className={usuario.rol === "administrador" ? "btn-downgrade" : "btn-promote"} 
+                        onClick={() => handleCambiarRol(usuario)}
+                      >
+                        {usuario.rol === "administrador" ? "Quitar Admin" : "Hacer Admin"}
+                      </button>
                       
                       <button className="btn-delete" onClick={() => handleEliminar(usuario._id)}>
                         🗑️ Eliminar
