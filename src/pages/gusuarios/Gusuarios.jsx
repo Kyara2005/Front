@@ -8,6 +8,9 @@ export default function Gusuario() {
   const [usuarios, setUsuarios] = useState([]);
   const [busqueda, setBusqueda] = useState("");
   const [loading, setLoading] = useState(true);
+  
+  // ESTADO PARA EL MODAL DESLIZABLE
+  const [modal, setModal] = useState({ show: false, user: null, type: "" });
 
   const currentUser = storeAuth((state) => state.user);
   const token = storeAuth.getState().token;
@@ -23,84 +26,48 @@ export default function Gusuario() {
       });
       const data = await res.json();
       setUsuarios(Array.isArray(data) ? data : data.users || []);
-    } catch (err) {
-      console.error("Error al obtener usuarios:", err);
-    } finally {
-      setLoading(false);
-    }
+    } catch (err) { console.error(err); } 
+    finally { setLoading(false); }
   };
 
-  useEffect(() => {
-    getUsuarios();
-  }, []);
+  useEffect(() => { getUsuarios(); }, []);
 
-  // ===============================
-  // LÓGICA: CAMBIAR ROL (TOGGLE)
-  // ===============================
-  const handleCambiarRol = async (usuario) => {
-    const nuevoRol = usuario.rol === "administrador" ? "estudiante" : "administrador";
-    const mensaje = `¿Deseas cambiar el rol de ${usuario.nombre} a ${nuevoRol}?`;
-    
-    if (!window.confirm(mensaje)) return;
-
+  // ACCIONES FINALES TRAS CONFIRMAR
+  const confirmarAccion = async () => {
+    const { user, type } = modal;
     try {
-      const res = await fetch(`${API_URL}/${usuario._id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ rol: nuevoRol }),
-      });
-
-      if (res.ok) {
-        setUsuarios((prev) =>
-          prev.map((u) => (u._id === usuario._id ? { ...u, rol: nuevoRol } : u))
-        );
+      if (type === "ROL") {
+        const nuevoRol = user.rol === "administrador" ? "estudiante" : "administrador";
+        const res = await fetch(`${API_URL}/${user._id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ rol: nuevoRol }),
+        });
+        if (res.ok) setUsuarios(prev => prev.map(u => u._id === user._id ? { ...u, rol: nuevoRol } : u));
+      } else if (type === "DELETE") {
+        const res = await fetch(`${API_URL}/${user._id}`, {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (res.ok) setUsuarios(prev => prev.filter(u => u._id !== user._id));
       }
-    } catch (err) {
-      alert("No se pudo actualizar el rol");
-    }
-  };
-
-  // ===============================
-  // LÓGICA: ELIMINAR DE LA BDD
-  // ===============================
-  const handleEliminar = async (id) => {
-    if (!window.confirm("¿Estás seguro? Se eliminará permanentemente de la BDD.")) return;
-
-    try {
-      const res = await fetch(`${API_URL}/${id}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      if (res.ok) {
-        setUsuarios((prev) => prev.filter((u) => u._id !== id));
-      }
-    } catch (err) {
-      alert("Error al eliminar el registro");
-    }
+    } catch (err) { alert("Error al procesar"); }
+    setModal({ show: false, user: null, type: "" }); // Cerrar modal
   };
 
   const usuariosFiltrados = usuarios.filter((u) => {
-    const coincideBusqueda = 
-      u.nombre?.toLowerCase().includes(busqueda.toLowerCase()) ||
-      u.correoInstitucional?.toLowerCase().includes(busqueda.toLowerCase());
-    
+    const coincide = u.nombre?.toLowerCase().includes(busqueda.toLowerCase()) || 
+                    u.correoInstitucional?.toLowerCase().includes(busqueda.toLowerCase());
     const noSoyYo = u.correoInstitucional !== currentUser?.correoInstitucional && 
                     u._id !== "696701c02175478e2b8302c4"; 
-
-    return coincideBusqueda && noSoyYo;
+    return coincide && noSoyYo;
   });
 
   if (loading) return <div className="gestion-usuarios-seccion"><h3>Cargando...</h3></div>;
 
   return (
     <div className="gestion-usuarios-seccion">
-      <div className="gestion-header">
-        <h2>👤 Gestión de Usuarios</h2>
-      </div>
+      <div className="gestion-header"><h2>👤 Gestión de Usuarios</h2></div>
 
       <div className="gestion-search-container">
         <input
@@ -123,43 +90,51 @@ export default function Gusuario() {
             </tr>
           </thead>
           <tbody>
-            {usuariosFiltrados.length === 0 ? (
-              <tr>
-                <td colSpan="4" style={{ textAlign: "center", padding: "40px" }}>
-                  No hay otros usuarios registrados
+            {usuariosFiltrados.map((usuario) => (
+              <tr key={usuario._id}>
+                <td className="font-bold">{usuario.nombre}</td>
+                <td>{usuario.correoInstitucional}</td>
+                <td>
+                  <span className={`gestion-badge ${usuario.rol === 'administrador' ? 'admin' : 'usuario'}`}>
+                    {usuario.rol}
+                  </span>
+                </td>
+                <td className="actions-cell">
+                  <button className={usuario.rol === "administrador" ? "btn-downgrade" : "btn-promote"} 
+                          onClick={() => setModal({ show: true, user: usuario, type: "ROL" })}>
+                    {usuario.rol === "administrador" ? "⬇️ Quitar Admin" : "⬆️ Hacer Admin"}
+                  </button>
+                  <button className="btn-delete" 
+                          onClick={() => setModal({ show: true, user: usuario, type: "DELETE" })}>
+                    🗑️ Eliminar
+                  </button>
                 </td>
               </tr>
-            ) : (
-              usuariosFiltrados.map((usuario) => (
-                <tr key={usuario._id}>
-                  <td className="font-bold">{usuario.nombre}</td>
-                  <td>{usuario.correoInstitucional}</td>
-                  <td>
-                    <span className={`gestion-badge ${usuario.rol === 'administrador' ? 'admin' : 'usuario'}`}>
-                      {usuario.rol}
-                    </span>
-                  </td>
-                  <td>
-                    <div className="actions-cell" style={{ justifyContent: "center" }}>
-                      {/* BOTÓN DINÁMICO SEGÚN EL ROL */}
-                      <button 
-                        className={usuario.rol === "administrador" ? "btn-downgrade" : "btn-promote"} 
-                        onClick={() => handleCambiarRol(usuario)}
-                      >
-                        {usuario.rol === "administrador" ? "Quitar Admin" : "Hacer Admin"}
-                      </button>
-                      
-                      <button className="btn-delete" onClick={() => handleEliminar(usuario._id)}>
-                        🗑️ Eliminar
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))
-            )}
+            ))}
           </tbody>
         </table>
       </div>
+
+      {/* --- MODAL DESLIZABLE (DENTRO DEL MISMO JSX) --- */}
+      {modal.show && (
+        <div className="modal-overlay">
+          <div className="modal-card">
+            <div className="modal-icon">{modal.type === "DELETE" ? "⚠️" : "👤"}</div>
+            <h3>{modal.type === "DELETE" ? "Confirmar Eliminación" : "Cambiar Privilegios"}</h3>
+            <p>
+              ¿Estás seguro de que deseas {modal.type === "DELETE" ? "eliminar a" : "cambiar el rol de"} 
+              <strong> {modal.user?.nombre}</strong>?
+            </p>
+            <div className="modal-buttons">
+              <button className="btn-cancel" onClick={() => setModal({ show: false })}>Cancelar</button>
+              <button className={modal.type === "DELETE" ? "btn-confirm-del" : "btn-confirm-rol"} 
+                      onClick={confirmarAccion}>
+                Confirmar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
