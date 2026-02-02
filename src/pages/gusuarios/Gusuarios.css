@@ -1,25 +1,26 @@
-/* Gusuarios.css - Estilos de Gestión Localizados */
+/* Gusuarios.css - Estilos de Gestión Final */
 
-/* Contenedor principal que debe envolver TODO en tu página de usuarios */
+/* Contenedor principal */
 .gestion-usuarios-seccion {
-  background-color: #E1BEE7 !important; /* Forzamos fondo gris claro profesional */
+  background-color: #E1BEE7 !important; /* Fondo lila según tu preferencia */
   min-height: 100vh;
   padding: 40px;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
   color: #1f2937;
 }
 
-/* Título */
-.gestion-usuarios-seccion h2 {
+/* Título de la página */
+.gestion-header h2 {
   color: #111827;
   font-size: 24px;
-  margin-bottom: 20px;
+  margin-bottom: 25px;
   display: flex;
   align-items: center;
   gap: 10px;
+  font-weight: 700;
 }
 
-/* Buscador de Gestión */
+/* Buscador tipo Gestión */
 .gestion-search-container {
   margin-bottom: 25px;
 }
@@ -28,17 +29,26 @@
   width: 100%;
   max-width: 400px;
   padding: 12px 16px;
-  border-radius: 8px;
+  border-radius: 10px;
   border: 1px solid #d1d5db;
-  background: white !important; /* Para que no salga oscuro como en tu foto */
+  background: white !important;
   color: #1f2937;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
-/* Contenedor Blanco de la Tabla */
+.gestion-input-search:focus {
+  outline: none;
+  border-color: #7b1fa2;
+  box-shadow: 0 0 0 3px rgba(123, 31, 162, 0.2);
+}
+
+/* Contenedor de la Tabla */
 .gestion-tabla-wrapper {
   background: white;
   border-radius: 12px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   border: 1px solid #e5e7eb;
 }
@@ -58,6 +68,7 @@
   text-align: left;
   font-size: 12px;
   text-transform: uppercase;
+  letter-spacing: 0.05em;
   color: #6b7280;
   border-bottom: 1px solid #e5e7eb;
 }
@@ -67,24 +78,96 @@
   border-bottom: 1px solid #f3f4f6;
   color: #374151;
   font-size: 14px;
+  vertical-align: middle;
 }
 
-/* Botones de Acción dentro de la tabla */
-.btn-gestion-edit {
-  background-color: #eef2ff;
-  color: #4338ca;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 6px;
+.gestion-table tr:hover {
+  background-color: #fbfaff;
+}
+
+/* Badges de Rol */
+.gestion-badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.gestion-badge.admin {
+  background-color: #f3e8ff;
+  color: #7b1fa2;
+}
+
+.gestion-badge.usuario {
+  background-color: #e0f2fe;
+  color: #0369a1;
+}
+
+/* --- BOTONES DE ACCIÓN (Mismo tamaño y separados) --- */
+.actions-cell {
+  display: flex;
+  gap: 15px; /* Espacio entre botones */
+  justify-content: center; /* Centrados en la celda */
+  align-items: center;
+}
+
+.btn-promote, 
+.btn-downgrade, 
+.btn-delete {
+  /* Tamaño uniforme obligatorio */
+  width: 140px; 
+  height: 38px;
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
   cursor: pointer;
-  margin-right: 8px;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
 }
 
-.btn-gestion-delete {
+/* Estilo Hacer Admin */
+.btn-promote {
+  background-color: #f0fdf4;
+  color: #16a34a;
+  border-color: #bbf7d0;
+}
+.btn-promote:hover {
+  background-color: #dcfce7;
+  transform: translateY(-2px);
+}
+
+/* Estilo Quitar Admin */
+.btn-downgrade {
+  background-color: #fff7ed;
+  color: #c2410c;
+  border-color: #ffedd5;
+}
+.btn-downgrade:hover {
+  background-color: #ffecd2;
+  transform: translateY(-2px);
+}
+
+/* Estilo Eliminar */
+.btn-delete {
   background-color: #fef2f2;
   color: #b91c1c;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 6px;
-  cursor: pointer;
+  border-color: #fee2e2;
+}
+.btn-delete:hover {
+  background-color: #fee2e2;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(185, 28, 28, 0.2);
+}
+
+/* Utilidades */
+.font-bold {
+  font-weight: 600;
+  color: #111827;
 }
