@@ -97,7 +97,7 @@ const ChangePasswordForm = () => {
       }
 
       const res = await axios.put(
-        `${import.meta.env.VITE_BACKEND_URL}/api/usuarios/actualizar/password`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/usuarios/actualizar/actualizar-password``,
         { oldPassword, newPassword },
         { headers: { Authorization: `Bearer ${token}` } }
       );
