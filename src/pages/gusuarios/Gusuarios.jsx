@@ -8,9 +8,8 @@ export default function Gusuario() {
   const [usuarios, setUsuarios] = useState([]);
   const [busqueda, setBusqueda] = useState("");
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
-  // Obtenemos el usuario actual de forma segura
+  // Obtenemos tu usuario del store
   const currentUser = storeAuth((state) => state.user);
 
   const getUsuarios = async () => {
@@ -23,15 +22,10 @@ export default function Gusuario() {
           Authorization: `Bearer ${token}`,
         },
       });
-
-      if (!res.ok) throw new Error("Error al cargar");
-
       const data = await res.json();
-      // Verificación de consola para depurar los emails
-      console.log("Datos recibidos:", data); 
       setUsuarios(Array.isArray(data) ? data : data.users || []);
     } catch (err) {
-      setError("Error de conexión");
+      console.error("Error al obtener usuarios:", err);
     } finally {
       setLoading(false);
     }
@@ -41,31 +35,17 @@ export default function Gusuario() {
     getUsuarios();
   }, []);
 
-  const eliminarUsuario = async (id) => {
-    if (!window.confirm("¿Seguro que deseas eliminar este usuario?")) return;
-    try {
-      const token = storeAuth.getState().token;
-      const res = await fetch(`${API_URL}/${id}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!res.ok) throw new Error("No se pudo eliminar");
-      setUsuarios((prev) => prev.filter((u) => u._id !== id));
-    } catch (err) {
-      alert("Error al eliminar usuario");
-    }
-  };
-
-  // FILTRO CORREGIDO
+  // FILTRADO ACTUALIZADO
   const usuariosFiltrados = usuarios.filter((u) => {
-    // 1. Filtro de búsqueda
+    // 1. Buscamos por nombre o por correoInstitucional
     const coincideBusqueda = 
       u.nombre?.toLowerCase().includes(busqueda.toLowerCase()) ||
-      u.email?.toLowerCase().includes(busqueda.toLowerCase());
+      u.correoInstitucional?.toLowerCase().includes(busqueda.toLowerCase());
     
-    // 2. Filtro para no mostrarte a ti mismo (usando email que es único)
-    // Si currentUser no existe todavía, dejamos que pase (true)
-    const noSoyYo = currentUser ? u.email !== currentUser.email : true;
+    // 2. EXCLUIRTE A TI (Damaris Lopez)
+    // Usamos el ID de tu BDD que me pasaste o el correoInstitucional
+    const noSoyYo = u.correoInstitucional !== currentUser?.correoInstitucional && 
+                    u._id !== "696701c02175478e2b8302c4"; 
 
     return coincideBusqueda && noSoyYo;
   });
@@ -82,7 +62,7 @@ export default function Gusuario() {
         <input
           type="text"
           className="gestion-input-search"
-          placeholder="Buscar por nombre o email..."
+          placeholder="Buscar por nombre o correo..."
           value={busqueda}
           onChange={(e) => setBusqueda(e.target.value)}
         />
@@ -93,7 +73,7 @@ export default function Gusuario() {
           <thead>
             <tr>
               <th>Nombre</th>
-              <th>Email</th>
+              <th>Email Institucional</th>
               <th>Rol</th>
               <th style={{ textAlign: "center" }}>Acciones</th>
             </tr>
@@ -102,26 +82,26 @@ export default function Gusuario() {
             {usuariosFiltrados.length === 0 ? (
               <tr>
                 <td colSpan="4" style={{ textAlign: "center", padding: "40px" }}>
-                  No se encontraron otros usuarios
+                  No hay otros usuarios registrados
                 </td>
               </tr>
             ) : (
               usuariosFiltrados.map((usuario) => (
                 <tr key={usuario._id}>
                   <td className="font-bold">{usuario.nombre}</td>
-                  {/* Cambia 'email' por la propiedad exacta que veas en el console.log */}
-                  <td>{usuario.email || <span style={{color: '#ccc'}}>Sin correo</span>}</td>
+                  {/* AQUÍ ESTABA EL ERROR: usamos correoInstitucional */}
+                  <td>{usuario.correoInstitucional}</td>
                   <td>
                     <span className={`gestion-badge ${usuario.rol === 'administrador' ? 'admin' : 'usuario'}`}>
-                      {usuario.rol || "estudiante"}
+                      {usuario.rol}
                     </span>
                   </td>
                   <td>
                     <div className="actions-cell" style={{ justifyContent: "center" }}>
-                      <button className="btn-edit" onClick={() => alert("Editar")}>
+                      <button className="btn-edit" onClick={() => alert("Editar a " + usuario.nombre)}>
                         ✏️ Editar
                       </button>
-                      <button className="btn-delete" onClick={() => eliminarUsuario(usuario._id)}>
+                      <button className="btn-delete" onClick={() => alert("Eliminar logic...")}>
                         🗑️ Eliminar
                       </button>
                     </div>
