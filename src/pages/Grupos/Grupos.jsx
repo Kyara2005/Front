@@ -67,10 +67,7 @@ const Grupos = () => {
                     { headers: { Authorization: `Bearer ${token}` } }
                 );
                 if (response.data?.nombre) setUserName(response.data.nombre);
-                if (response.data?.avatar) {
-                    setAvatar(response.data.avatar);
-                    console.log("Avatar cargado:", response.data.avatar);
-                }
+                if (response.data?.avatar) setAvatar(response.data.avatar);
                 if (response.data?.rol) setUserRole(response.data.rol);
             } catch (error) { console.error("Error al obtener el perfil:", error); }
         };
@@ -173,11 +170,8 @@ const Grupos = () => {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
-                    autor: userName, 
-                    autorFoto: avatar, // Aquí enviamos tu foto actual
-                    autorEmail: userEmail,
-                    contenido: nuevoPost, 
-                    foto: fotoPost 
+                    autor: userName, autorFoto: avatar, autorEmail: userEmail,
+                    contenido: nuevoPost, foto: fotoPost 
                 })
             });
             const postGuardado = await res.json();
@@ -310,9 +304,10 @@ const Grupos = () => {
 
                 <div className="fb-body-grid single-column">
                     <main className="fb-feed-center">
+                        {/* ÁREA DE PUBLICAR */}
                         <div className="fb-card-white publish-area">
                             <div className="publish-input-row">
-                                <img src={avatar || "https://via.placeholder.com/40"} className="mini-avatar-fb" alt="yo" />
+                                {avatar ? <img src={avatar} className="mini-avatar-fb" alt="yo" /> : <FaUserCircle size={40} color="#ccc" />}
                                 <input placeholder={`¿Qué compartes hoy, ${userName}?`} value={nuevoPost} onChange={(e) => setNuevoPost(e.target.value)} />
                             </div>
                             {fotoPost && <div className="preview-foto-post"><img src={fotoPost} alt="preview" /><button onClick={()=>setFotoPost(null)}>X</button></div>}
@@ -323,23 +318,17 @@ const Grupos = () => {
                             </div>
                         </div>
 
+                        {/* LISTA DE POSTS */}
                         {grupoData.posts?.map(post => {
                             const esMiPost = post.autorEmail === userEmail;
                             const esAdmin = userRole === 'admin' || esCreadorGrupo;
                             const estaAbierto = comentariosAbiertos[post._id];
-                            
-                            // LOGICA DE REFUERZO PARA LA FOTO
-                            const fotoFinal = post.autorFoto || (esMiPost ? avatar : "https://via.placeholder.com/40");
 
                             return (
                                 <div key={post._id} className="fb-card-white post-container">
                                     <div className="post-top-header">
                                         <div className="mini-avatar-fb">
-                                            <img 
-                                                src={fotoFinal} 
-                                                alt="autor" 
-                                                onError={(e) => { e.target.src = "https://via.placeholder.com/40"; }}
-                                            />
+                                            <img src={post.autorFoto || "https://via.placeholder.com/40"} alt="autor" />
                                         </div>
                                         <div className="post-user-meta">
                                             <span className="author-fb">{post.autor}</span>
@@ -392,7 +381,7 @@ const Grupos = () => {
                                         <div className="fb-comments-section">
                                             {post.comentarios?.map((com, idx) => (
                                                 <div key={idx} className="comment-item">
-                                                    <img src={com.autorFoto || (com.autorEmail === userEmail ? avatar : "https://via.placeholder.com/32")} alt="v" className="comment-mini-avatar" />
+                                                    <img src={com.autorFoto || "https://via.placeholder.com/32"} alt="v" className="comment-mini-avatar" />
                                                     <div className="comment-bubble">
                                                         <span className="comment-author-name">{com.autor}</span>
                                                         <span className="comment-text">{com.contenido}</span>
