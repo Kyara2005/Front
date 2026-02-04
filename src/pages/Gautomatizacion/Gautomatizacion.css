@@ -1,26 +1,50 @@
 .gauto-container {
-    padding: 40px;
-    color: white;
+    padding: 2rem;
+    color: #fff;
 }
 
-.gauto-card {
-    background: #1f1f1f;
-    padding: 20px;
-    border-radius: 12px;
-    margin-bottom: 20px;
+.gauto-container h2 {
+    margin-bottom: 1.5rem;
+}
+
+.gauto-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1.5rem;
+}
+
+.gauto-table th,
+.gauto-table td {
+    border: 1px solid #444;
+    padding: 0.75rem;
+    text-align: center;
+}
+
+.gauto-table th {
+    background-color: #222;
+}
+
+.gauto-table tr:nth-child(even) {
+    background-color: #1a1a1a;
+}
+
+.gauto-empty {
+    text-align: center;
+    color: #aaa;
+    padding: 1.5rem;
 }
 
 .gauto-btn {
-    background: linear-gradient(135deg, #7f00ff, #e100ff);
-    border: none;
-    padding: 12px 24px;
+    background-color: #7c3aed;
     color: white;
-    border-radius: 25px;
+    border: none;
+    padding: 0.7rem 1.5rem;
+    border-radius: 8px;
     cursor: pointer;
-    font-weight: bold;
+    font-weight: 600;
 }
 
-.gauto-btn:hover {
-    opacity: 0.85;
+.gauto-btn:disabled {
+    background-color: #555;
+    cursor: not-allowed;
 }
-
