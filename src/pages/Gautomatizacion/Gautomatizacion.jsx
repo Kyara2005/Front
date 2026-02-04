@@ -1,47 +1,59 @@
 import { useEffect, useState } from "react";
-import {
-    obtenerAutomatizaciones,
-    crearAutomatizacion
-} from "../../Services/adminService";
+import "./Gautomatizacion.css";
 
-export default function Gautomatizacion() {
-    const [automatizaciones, setAutomatizaciones] = useState([]);
+const Gautomatizacion = () => {
+    const [reporte, setReporte] = useState(null);
 
     useEffect(() => {
-        cargar();
+        const token = localStorage.getItem("token");
+
+        const obtenerReporte = async () => {
+        try {
+            const response = await fetch(
+            `${import.meta.env.VITE_BACKEND_URL}/api/automatizacion/reporte/grupos`,
+            {
+                method: "GET",
+                headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+                },
+            }
+            );
+
+            if (!response.ok) {
+            throw new Error("Error al obtener el reporte");
+            }
+
+            const data = await response.json();
+            setReporte(data.reporte);
+
+        } catch (error) {
+            console.error("Error:", error);
+        }
+        };
+
+        obtenerReporte();
     }, []);
 
-    const cargar = async () => {
-        const { data } = await obtenerAutomatizaciones();
-        setAutomatizaciones(data);
-    };
-
     return (
-        <div className="p-6">
-        <h1 className="text-2xl font-bold mb-4">
-            Automatización de Grupos
-        </h1>
+        <div className="gauto-container">
+        <h2>Automatización del Sistema 🤖</h2>
 
-        <table className="w-full border">
-            <thead>
-            <tr>
-                <th>Nombre</th>
-                <th>Tipo</th>
-                <th>Grupo</th>
-                <th>Estado</th>
-            </tr>
-            </thead>
-            <tbody>
-            {automatizaciones.map((a) => (
-                <tr key={a._id}>
-                <td>{a.nombre}</td>
-                <td>{a.tipo}</td>
-                <td>{a.grupo?.nombre}</td>
-                <td>{a.activo ? "Activo" : "Inactivo"}</td>
-                </tr>
-            ))}
-            </tbody>
-        </table>
+        {reporte && (
+            <div className="gauto-card">
+            <p>Total de grupos: <strong>{reporte.totalGrupos}</strong></p>
+            <p>Grupos activos: <strong>{reporte.gruposActivos}</strong></p>
+            <p>Grupos inactivos: <strong>{reporte.gruposInactivos}</strong></p>
+            </div>
+        )}
+
+        <button className="gauto-btn">
+            Solicitar Automatización
+        </button>
         </div>
     );
-}
+};
+
+export default Gautomatizacion;
+
+

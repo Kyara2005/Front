@@ -1,0 +1,26 @@
+.gauto-container {
+    padding: 40px;
+    color: white;
+}
+
+.gauto-card {
+    background: #1f1f1f;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+
+.gauto-btn {
+    background: linear-gradient(135deg, #7f00ff, #e100ff);
+    border: none;
+    padding: 12px 24px;
+    color: white;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.gauto-btn:hover {
+    opacity: 0.85;
+}
+
