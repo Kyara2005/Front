@@ -42,10 +42,10 @@ export default function Gusuario() {
     const { user, type } = modal;
     if (!user) return;
 
-    // --- GUARDIA DE SEGURIDAD ADICIONAL ---
-    // Evita que aunque el usuario sea visible por error, no se pueda procesar la petición
+    // --- GUARDIA DE SEGURIDAD CRÍTICA ---
+    // Incluso si por un error de render apareces, esta función bloquea la petición
     if (String(user._id) === String(currentUser?._id)) {
-      alert("Operación no permitida: No puedes modificar tu propio rango o eliminarte a ti mismo.");
+      alert("Acción denegada: No puedes modificar tu propio perfil de administrador.");
       setModal({ show: false, user: null, type: "" });
       return;
     }
@@ -89,19 +89,18 @@ export default function Gusuario() {
     }
   };
 
-  // 🔹 Filtrado de búsqueda y EXCLUSIÓN TOTAL del usuario logueado
+  // 🔹 FILTRADO INTELIGENTE: Búsqueda + Exclusión del usuario actual
   const usuariosFiltrados = usuarios.filter((u) => {
     const coincide = u.nombre?.toLowerCase().includes(busqueda.toLowerCase()) || 
                      u.correoInstitucional?.toLowerCase().includes(busqueda.toLowerCase());
     
-    // Convertimos ambos a String para asegurar que la comparación sea exacta
-    // Esto evita problemas si uno es un ID de Mongo y el otro un String de JS
+    // EXCLUSIÓN: Comparamos IDs como String para evitar errores de referencia
     const noSoyYo = String(u._id) !== String(currentUser?._id);
 
     return coincide && noSoyYo;
   });
 
-  if (loading) return <div className="gestion-usuarios-seccion"><h3>Cargando sistema...</h3></div>;
+  if (loading) return <div className="gestion-usuarios-seccion"><h3>Cargando sistema de gestión...</h3></div>;
 
   return (
     <div className="gestion-usuarios-seccion">
@@ -132,7 +131,9 @@ export default function Gusuario() {
           <tbody>
             {usuariosFiltrados.length === 0 ? (
               <tr>
-                <td colSpan="4" style={{ textAlign: "center", padding: "40px" }}>No hay otros registros disponibles</td>
+                <td colSpan="4" style={{ textAlign: "center", padding: "40px" }}>
+                  {busqueda ? "No se encontraron coincidencias" : "No hay otros usuarios para gestionar"}
+                </td>
               </tr>
             ) : (
               usuariosFiltrados.map((usuario) => (
